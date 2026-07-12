@@ -1,0 +1,38 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Reda Yahyani',
+  date: '2025-03-24',
+  title: 'The Real Work of Freelancing Isn’t the Code',
+  description:
+    'The technical work is rarely the hard part of freelancing. Managing expectations, scope, and communication is its own skill, and it’s the one that actually determines how a project goes.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+Most of what makes a freelance project go well or badly has very little to do with how good the code is. I've come to think of client handling as its own discipline, separate from engineering. Nobody teaches it alongside the technical skills, but it ends up mattering just as much.
+
+## Scope creep starts small and polite
+
+It rarely shows up as a dramatic new demand. It's "could we also just add a small toggle for that," said in a tone that makes it sound like a five minute favor. Each request on its own is reasonable. Added together, they're a second project that nobody scoped, priced, or scheduled. The fix isn't refusing everything. It's writing scope down clearly enough, early enough, that both sides can see when something falls outside it, and treating "let's scope that as a follow up" as a normal, friendly sentence instead of a confrontation.
+
+## Set expectations before there's a reason to
+
+The conversations that prevent problems are the boring ones you have on day one. How often you'll check in. What done actually looks like for this phase. What happens if a deadline slips. How revisions work. Skipping them doesn't make the project simpler. It just means you'll have those same conversations later, under worse conditions, after something has already gone sideways.
+
+## Communication cadence is a deliverable
+
+Silence erodes trust faster than almost anything else, even when the work itself is on track. A client who hasn't heard anything in a week doesn't assume things are going well. They assume the opposite. A short, regular update costs a few minutes and does more for the relationship than an extra day of heads down work, most of the time. Being technically right that "it's fine, I'm still working on it" doesn't help much if the client spent that week assuming otherwise.
+
+## Saying no is a skill, not a risk
+
+Early on it's tempting to treat every client request as something to accommodate, because saying no feels like it puts the relationship at risk. In practice the opposite tends to be true. A clear, well reasoned no, with a real alternative attached, usually reads as competence. What actually damages trust is saying yes to everything and then quietly missing deadlines because there was never enough time to do it all.
+
+## The technical work is the part you already know how to do
+
+Nobody freelances because they're unsure whether they can write the code. The uncertainty is almost always on the other side. Pricing the work fairly. Having the scope conversation. Pushing back on an unreasonable timeline. Keeping a client informed without over communicating. None of that comes from a tutorial. It comes from doing it, getting it wrong a few times, and noticing which conversation would have prevented the problem if it had happened a week earlier.

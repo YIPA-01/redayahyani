@@ -1,0 +1,38 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Reda Yahyani',
+  date: '2026-05-11',
+  title: 'Efficient Agentic Software Development',
+  description:
+    'Coding agents are capable, but capability isn’t the same as judgment. Some notes on what actually makes agentic development fast and reliable, instead of just fast.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+Working with a coding agent feels different from working with autocomplete. Autocomplete finishes your sentence. An agent can read a codebase, make a plan, edit a dozen files, and run your test suite without you watching every keystroke. That's a real shift in leverage. It also means the ways you can waste time, or ship something wrong, shift along with it.
+
+## Treat it like a capable collaborator with no memory of yesterday
+
+An agent doesn't know why a strange workaround exists in your code. It doesn't know which client asked for that edge case, and it doesn't know what you already tried and ruled out. It's capable, but it's blind to context by default. The fastest agentic workflows front load that context instead of expecting the agent to guess at it, pointing at the relevant files, explaining the constraint, saying what's already been tried. Skipping that step doesn't save time. It just moves the cost to the review, when you're the one catching the thing it had no way of knowing.
+
+## Small, verifiable steps beat one giant leap
+
+It's tempting to hand over a big vague goal and let the agent run with it. Sometimes that works fine. More often, the further an agent goes without a checkpoint, the more a small wrong assumption compounds into a large wrong result by the end. Breaking work into steps that can each be verified, a passing test, a page that actually renders, a clean type check, keeps errors local and cheap to fix instead of buried three files deep by the time anyone notices.
+
+## Planning matters more than prompt phrasing
+
+A lot of energy goes into wording prompts just right, when the bigger lever is almost always scoping the task correctly before any code gets written. What files does this actually touch. What's explicitly out of scope. What does done actually look like. An agent given a clear, bounded plan will outperform one given a cleverly worded but underspecified instruction almost every time. This is just normal engineering discipline. It doesn't disappear because the thing writing the code happens to be an agent instead of a person.
+
+## Verification is not optional
+
+An agent can lint clean and type check clean and still be wrong about what the code actually does once it runs. Tests and type checks verify correctness of the code, not correctness of the feature. The habit that pays off the most is simply running the thing. Load the page. Hit the endpoint. Read the diff line by line before trusting it. Agents are very good at producing output that looks plausible. Plausible and correct aren't the same claim, even when they look identical on screen.
+
+## Humans still own the judgment calls
+
+Agents are excellent at mechanical, well specified work, and increasingly good at ambiguous work too. But decisions with real consequences, what to ship, what tradeoff to accept, what a user actually needs, still benefit from a person weighing in. The efficient version of agentic development isn't letting it run unsupervised as much as possible. It's knowing which parts of the work are safe to hand off completely, which need checkpoints along the way, and which need a person making the final call, and then building a workflow around that instead of pretending the agent should own all of it.

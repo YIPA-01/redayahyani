@@ -1,0 +1,48 @@
+import { ArticleLayout } from '@/components/ArticleLayout'
+
+export const article = {
+  author: 'Reda Yahyani',
+  date: '2026-07-10',
+  title: 'What Retrieval-Augmented Generation Actually Solves',
+  description:
+    'RAG gets thrown around as a buzzword, but the problem it solves is simple. Language models don’t know what they weren’t trained on. Here’s what it is, how it works, and where it quietly breaks.',
+}
+
+export const metadata = {
+  title: article.title,
+  description: article.description,
+}
+
+export default (props) => <ArticleLayout article={article} {...props} />
+
+Every large language model has a hard boundary. It only knows what was in its training data, frozen at some cutoff date. Ask it about your company's internal docs, last week's changelog, or a PDF you just uploaded, and it has two options. Admit it doesn't know, or guess. Guessing is where hallucinations come from.
+
+Retrieval-Augmented Generation, or RAG, is the fix for that boundary. Instead of relying purely on what the model memorized during training, you hand it relevant information at the moment you ask the question.
+
+## The idea in one sentence
+
+Before generating an answer, go fetch the small number of documents that are actually relevant to the question, and put them into the prompt so the model can read them before responding. That's really the whole idea. RAG isn't a model architecture or a training technique. It's a retrieval step attached to a normal generation call.
+
+## How it works, mechanically
+
+First you chunk your source documents into smaller pieces, maybe a paragraph or a few hundred tokens each. Then you embed each chunk into a vector using an embedding model, and store those vectors somewhere you can search them, usually a vector database, though for small datasets an in-memory index works fine.
+
+When a question comes in, you embed it the same way and search for the chunks whose vectors sit closest to it. This is semantic search rather than keyword search, so it can match meaning instead of exact words. The top matching chunks get added to the prompt, often with an instruction like "answer using only the following context." Then the model generates its answer, grounded in something real and current instead of its frozen memory.
+
+## Why it's not magic
+
+RAG has a reputation as a cure for hallucinations, but really it just moves where things can go wrong.
+
+Retrieval quality ends up being the actual bottleneck. If the wrong chunks get pulled in, the model will confidently answer from irrelevant context, or fall back to guessing anyway. Garbage in, garbage out still applies. It's just one layer removed from where you'd expect it.
+
+Chunking is also lossy in ways that aren't obvious until they bite you. Split a document badly and you can separate a claim from the caveat sitting right next to it, or cut a table in half. The model only sees what's inside the chunk, not the surrounding context that gave it meaning in the first place.
+
+Indexes go stale too. RAG only helps as much as your index reflects reality. A vector database that hasn't been re-embedded since your docs changed is just a more expensive way of being wrong.
+
+And more context isn't free. Stuffing in ten chunks to be safe dilutes the signal, costs more tokens, and can bury the one relevant sentence under a pile of noise the model still has to read through.
+
+## Where it actually earns its keep
+
+RAG is genuinely useful when the knowledge you need is specific, current, and too large to fit into a prompt every time. Internal documentation, support histories, codebases, that kind of thing. It's a lot less useful when the task is really about reasoning over a small, fixed amount of information you could just paste in directly. At that point the retrieval step is overhead, not help.
+
+The lesson underneath all of this goes beyond RAG itself. Giving a model the right information at the right time beats hoping it remembers. The hard part was never wiring up a vector database. It's making sure what you retrieve is actually what the question needed.
