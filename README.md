@@ -1,16 +1,16 @@
-# Spotlight
+# Reda Yahyani — Portfolio
 
-Spotlight is a [Tailwind UI](https://tailwindui.com) site template built using [Tailwind CSS](https://tailwindcss.com) and [Next.js](https://nextjs.org).
+This is my personal portfolio website, showcasing my work as a software engineer, along with my writing and projects. Built with [Next.js](https://nextjs.org) and [Tailwind CSS](https://tailwindcss.com).
 
 ## Getting started
 
-To get started with this template, first install the npm dependencies:
+Install the npm dependencies:
 
 ```bash
 npm install
 ```
 
-Next, create a `.env.local` file in the root of your project and set the `NEXT_PUBLIC_SITE_URL` variable to your site's public URL:
+Next, create a `.env.local` file in the root of your project and set the `NEXT_PUBLIC_SITE_URL` variable to the site's public URL:
 
 ```
 NEXT_PUBLIC_SITE_URL=https://example.com
@@ -24,19 +24,13 @@ npm run dev
 
 Finally, open [http://localhost:3000](http://localhost:3000) in your browser to view the website.
 
-## Customizing
+## Tech stack
 
-You can start editing this template by modifying the files in the `/src` folder. The site will auto-update as you edit these files.
+- [Next.js](https://nextjs.org/docs) — React framework
+- [Tailwind CSS](https://tailwindcss.com/docs) — styling
+- [MDX](https://mdxjs.com) — writing/articles content
+- [Headless UI](https://headlessui.dev) — accessible UI primitives
 
 ## License
 
-This site template is a commercial product and is licensed under the [Tailwind UI license](https://tailwindui.com/license).
-
-## Learn more
-
-To learn more about the technologies used in this site template, see the following resources:
-
-- [Tailwind CSS](https://tailwindcss.com/docs) - the official Tailwind CSS documentation
-- [Next.js](https://nextjs.org/docs) - the official Next.js documentation
-- [Headless UI](https://headlessui.dev) - the official Headless UI documentation
-- [MDX](https://mdxjs.com) - the MDX documentation
+Built on top of the [Spotlight](https://tailwindui.com/templates/spotlight) template by Tailwind UI, licensed under the [Tailwind UI license](https://tailwindui.com/license).
