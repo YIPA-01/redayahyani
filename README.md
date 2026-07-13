@@ -1,4 +1,4 @@
-# Reda Yahyani — Portfolio
+# Reda Yahyani Portfolio
 
 This is my personal portfolio website, showcasing my work as a software engineer, along with my writing and projects. Built with [Next.js](https://nextjs.org) and [Tailwind CSS](https://tailwindcss.com).
 
@@ -26,10 +26,10 @@ Finally, open [http://localhost:3000](http://localhost:3000) in your browser to 
 
 ## Tech stack
 
-- [Next.js](https://nextjs.org/docs) — React framework
-- [Tailwind CSS](https://tailwindcss.com/docs) — styling
-- [MDX](https://mdxjs.com) — writing/articles content
-- [Headless UI](https://headlessui.dev) — accessible UI primitives
+- [Next.js](https://nextjs.org/docs) : React framework
+- [Tailwind CSS](https://tailwindcss.com/docs) : styling
+- [MDX](https://mdxjs.com) : writing/articles content
+- [Headless UI](https://headlessui.dev) : accessible UI primitives
 
 ## License
 
