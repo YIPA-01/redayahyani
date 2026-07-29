@@ -197,10 +197,10 @@ Open detail: the guest-facing URL scheme must coexist with the existing static `
 - No client-consent workflow for now (accepted risk, upgrade path exists)
 - Email notifications are core scope
 - `memberUids` array instead of single `clientUid`
+- Client sign-in v1 is email/password via the client SDK; email-link and password reset deferred
 
 ## Remaining open items
 
-- Client sign-in mechanism: Firebase email-link (passwordless) proposed, not confirmed
 - Admin authoring surface: admin panel inside this app vs something else
 - Document constraints: size/type limits, preview vs download-only
 - Guest URL scheme (see above)
