@@ -12,38 +12,53 @@ import logoGenZ from '@/images/logos/genz.svg'
 const projects: Array<{
   name: string
   description: string
-  link: { href: string; label: string }
+  role?: string
+  stack?: Array<string>
+  caseStudy?: string
+  link?: { href: string; label: string }
   logo?: ImageProps['src']
   builtWith?: { name: string; logo: ImageProps['src'] }
 }> = [
   {
     name: 'Roomee',
+    role: 'Lead engineer, 2024 to present',
     description:
-      'A startup I co-founded, where I lead engineering as CTO.',
+      'A rental marketplace for students and young professionals in Morocco. I lead engineering: listing ingestion, search, and the matching that pairs renters with places they can actually afford.',
+    // TODO: confirm stack
+    stack: ['Next.js', 'TypeScript', 'PostgreSQL', 'Supabase'],
+    caseStudy: 'roomee',
     link: { href: 'https://roomee.ma', label: 'roomee.ma' },
     logo: logoRoomee,
   },
   {
     name: 'Path90',
-    description: 'A Progressive Web App for tracking and guiding new release convicts through their parole process. Built in collaboration with Exploder Agency.',
-    link: { href: 'path90.org', label: 'path90.org' },
-    builtWith: { name: 'Exploder Agency', logo: logoExploda },
+    role: 'Freelance engineer, with Exploda',
+    description:
+      'A progressive web app that guides people through parole, tracking obligations, appointments, and check-ins so nothing slips. Built offline-first, because the people using it cannot count on a stable connection.',
+    // TODO: confirm stack
+    stack: ['React', 'TypeScript', 'PWA', 'Firestore'],
+    link: { href: 'https://path90app.com', label: 'path90app.com' },
+    builtWith: { name: 'Exploda', logo: logoExploda },
     logo: logoPath90,
   },
   {
     name: 'AutoAiConnect',
-    description: 'A mobile app for connecting with AI agents. Built in collaboration with Exploder Agency.',
-    link: {
-      href: 'https://apps.apple.com/app/idXXXXXXXXXX',
-      label: 'App Store',
-    },
-    builtWith: { name: 'Exploder Agency', logo: logoExploda },
+    role: 'Freelance engineer, with Exploda',
+    description:
+      'A mobile client for conversing with AI agents, built with Exploda. Currently unreleased.',
+    // TODO: confirm stack
+    stack: ['React Native', 'TypeScript'],
+    builtWith: { name: 'Exploda', logo: logoExploda },
     logo: logoAutoAiConnect,
   },
   {
     name: 'GenZ',
-    description: 'A web app platform for academic orientation and professional guidance.',
-    link: { href: 'https://github.com/YIPA-01/GenZ-Platform', label: 'github' },
+    role: 'Solo project',
+    description:
+      'A platform for academic orientation and career guidance, helping students map their subjects and interests onto real paths.',
+    // TODO: confirm stack
+    stack: ['React', 'Node.js', 'MongoDB'],
+    link: { href: 'https://github.com/YIPA-01/GenZ-Platform', label: 'GitHub' },
     logo: logoGenZ,
   },
 ]
