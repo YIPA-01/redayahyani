@@ -145,9 +145,9 @@ Notes:
     name, memberUids[], status, createdAt          -- private, no public fields here
 
     /projects/{projectId}/public/profile           -- singleton doc, admin-created
-        slug, title, summary, phase                -- read only via Admin SDK (server)
+        slug, title, summary, phase                -- guests via Admin SDK; members may read
 
-    /projects/{projectId}/publicUpdates/{updateId} -- read only via Admin SDK (server)
+    /projects/{projectId}/publicUpdates/{updateId} -- guests via Admin SDK; members may read
         title, body, images[], publishedAt
 
     /projects/{projectId}/milestones/{milestoneId}      -- private
@@ -163,11 +163,13 @@ Storage layout: `/projects/{projectId}/documents/{documentId}/{filename}` for pr
 
 ### Security rules shape
 
+Implemented in `firestore.rules` with an executable test suite at `tests/rules/firestore-rules.test.ts` (run with `npm run test:rules`). The rules file is the source of truth; this section records the shape.
+
 - No unauthenticated read or write anywhere. Guest traffic never reaches Firestore.
-- Private subcollections: ownership lives **only** on the project document; child documents do not denormalize membership. Rules resolve it via lookup:
-  `allow read, write: if isAdmin() || request.auth.uid in get(/databases/$(database)/documents/projects/$(projectId)).data.memberUids;`
-  (one extra document read per access, fine at this scale).
-- `public/profile` and `publicUpdates`: admin-only write; no client-side read rule needed since the server reads them with the Admin SDK, which bypasses rules.
+- Private subcollections: ownership lives **only** on the project document; child documents do not denormalize membership. Rules resolve it via a `get()` lookup on the project's `memberUids` (one extra document read per access, fine at this scale).
+- Rules are verb-split per collection, narrower than "members read and write". Members read everything in their project but their writes are exactly two: creating a message with their own uid as `senderId` (sender spoofing is denied for everyone, admin included), and fulfilling a requirement request, where the update may touch only `status` and `fulfilledAt` and may only set `status` to fulfilled. That key allowlist is also the no-secrets guard: a client cannot attach a value field. Milestones, progress updates, documents, and all public content are admin-only writes.
+- `public/profile` and `publicUpdates`: admin-only write. Project members may read their own project's public docs through rules (a client sees everything a guest sees). Unauthenticated reads stay denied; guests are served by the Admin SDK on the server, which bypasses rules.
+- `/users/{uid}`: a user reads their own doc, admin reads all. No self-writes of any kind, which closes the role escalation path. User docs are created only via the Admin SDK.
 - `isAdmin()` checks a custom auth claim. Claims are set server-side; the first admin claim is bootstrapped once by a local script using the Admin SDK (service account), never through the app.
 
 ## Notifications (core concept, not an add-on)

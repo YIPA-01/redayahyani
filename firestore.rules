@@ -1,0 +1,96 @@
+rules_version = '2';
+
+// Client portal rules. Design record: docs/portal-concept.md.
+// Posture: closed by default. No unauthenticated read or write anywhere.
+// Guest pages never touch Firestore; the server reads with the Admin SDK,
+// which bypasses these rules.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Admin is a custom auth claim, set server-side only (bootstrap script
+    // in a later phase; simulated directly in rules tests).
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    // Membership lives only on the project doc. One extra read per access.
+    function isProjectMember(projectId) {
+      return isSignedIn()
+        && request.auth.uid in get(/databases/$(database)/documents/projects/$(projectId)).data.memberUids;
+    }
+
+    // A user reads their own doc. Nobody self-writes: any self-write path
+    // would expose the role field to escalation. User docs are created by
+    // the Admin SDK, which bypasses rules.
+    match /users/{uid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+      allow write: if isAdmin();
+    }
+
+    match /projects/{projectId} {
+      // Member read checks resource directly, no get() needed here.
+      // Admin-only write is what makes memberUids escalation impossible.
+      allow read: if isAdmin()
+        || (isSignedIn() && request.auth.uid in resource.data.memberUids);
+      allow write: if isAdmin();
+
+      // Public face: deliberately authored, admin-only write. Members may
+      // read their own project's public docs (they see everything a guest
+      // sees). Unauthenticated reads stay denied; guests are served by the
+      // Admin SDK on the server.
+      match /public/{docId} {
+        allow read: if isAdmin() || isProjectMember(projectId);
+        allow write: if isAdmin();
+      }
+
+      match /publicUpdates/{updateId} {
+        allow read: if isAdmin() || isProjectMember(projectId);
+        allow write: if isAdmin();
+      }
+
+      // Admin-authored private content: members read, only admin writes.
+      match /milestones/{milestoneId} {
+        allow read: if isAdmin() || isProjectMember(projectId);
+        allow write: if isAdmin();
+      }
+
+      match /progressUpdates/{updateId} {
+        allow read: if isAdmin() || isProjectMember(projectId);
+        allow write: if isAdmin();
+      }
+
+      match /documents/{documentId} {
+        allow read: if isAdmin() || isProjectMember(projectId);
+        allow write: if isAdmin();
+      }
+
+      // Messages: anyone in the project writes, but only as themselves.
+      // Clients cannot edit or delete anything once sent.
+      match /messages/{messageId} {
+        allow read: if isAdmin() || isProjectMember(projectId);
+        allow create: if (isAdmin() || isProjectMember(projectId))
+          && request.resource.data.senderId == request.auth.uid;
+        allow update, delete: if isAdmin();
+      }
+
+      // Requirement requests: admin authors them. A member may only mark
+      // one fulfilled: nothing but status and fulfilledAt may change, and
+      // status may only become 'fulfilled'. The key allowlist is also the
+      // no-secrets guard: a client cannot attach a value field.
+      match /requirementRequests/{reqId} {
+        allow read: if isAdmin() || isProjectMember(projectId);
+        allow create, delete: if isAdmin();
+        allow update: if isAdmin()
+          || (isProjectMember(projectId)
+            && request.resource.data.diff(resource.data).affectedKeys()
+                 .hasOnly(['status', 'fulfilledAt'])
+            && request.resource.data.status == 'fulfilled');
+      }
+    }
+  }
+}
