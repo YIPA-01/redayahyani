@@ -1,5 +1,5 @@
 import { Badge } from '@/components/portal/Badge'
-import { formatTimestamp } from '@/lib/portal/format'
+import { formatDateOnly } from '@/lib/portal/format'
 import type { WithId } from '@/lib/portal/firestore'
 import type { MilestoneDoc, MilestoneStatus } from '@/lib/portal/types'
 
@@ -42,7 +42,7 @@ export function MilestoneList({
               {milestone.description}
             </p>
             <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
-              Due {formatTimestamp(milestone.dueDate)}
+              Due {formatDateOnly(milestone.dueDate)}
             </p>
           </div>
         </li>

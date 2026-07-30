@@ -228,6 +228,13 @@ describe('/projects/{id}', () => {
       updateDoc(doc(db('admin'), 'projects/project-a'), { status: 'paused' }),
     )
   })
+  it('lets admin update memberUids alone (member add and remove)', async () => {
+    await assertSucceeds(
+      updateDoc(doc(db('admin'), 'projects/project-a'), {
+        memberUids: ['client-user', 'other-client'],
+      }),
+    )
+  })
   it('lets admin create a project', async () => {
     await assertSucceeds(
       setDoc(doc(db('admin'), 'projects/new-project'), {
@@ -466,6 +473,26 @@ describe('/messages', () => {
       setDoc(doc(db('member'), 'projects/project-a/messages/message-2'), {
         senderId: 'client-user',
         body: 'From the client.',
+        createdAt: Timestamp.now(),
+      }),
+    )
+  })
+  it('lets a member create a message with a denormalized senderName', async () => {
+    await assertSucceeds(
+      setDoc(doc(db('member'), 'projects/project-a/messages/message-2b'), {
+        senderId: 'client-user',
+        senderName: 'Client User',
+        body: 'With a name.',
+        createdAt: Timestamp.now(),
+      }),
+    )
+  })
+  it('lets admin create a message with a denormalized senderName', async () => {
+    await assertSucceeds(
+      setDoc(doc(db('admin'), 'projects/project-a/messages/message-2c'), {
+        senderId: 'admin-user',
+        senderName: 'Reda Yahyani',
+        body: 'Admin with a name.',
         createdAt: Timestamp.now(),
       }),
     )

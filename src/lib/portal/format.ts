@@ -12,6 +12,18 @@ export function formatTimestamp(t: Timestamp | null | undefined): string {
   })
 }
 
+// For date-only values stored as UTC midnight (e.g. milestone due dates).
+// Rendering in UTC makes the picked date roundtrip in every timezone.
+export function formatDateOnly(t: Timestamp | null | undefined): string {
+  if (!t) return ''
+  return t.toDate().toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+}
+
 export function formatTimestampTime(t: Timestamp | null | undefined): string {
   if (!t) return ''
   return t.toDate().toLocaleString('en-US', {

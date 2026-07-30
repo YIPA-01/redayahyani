@@ -4,13 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/Button'
 import { usePortalAuth } from '@/components/portal/PortalAuthProvider'
+import { textareaClasses } from '@/components/portal/fieldStyles'
 import { sendMessage } from '@/lib/portal/firestore'
 import { formatTimestampTime } from '@/lib/portal/format'
 import type { WithId } from '@/lib/portal/firestore'
 import type { MessageDoc } from '@/lib/portal/types'
-
-const textareaClasses =
-  'w-full min-w-0 resize-none appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 sm:text-sm dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10'
 
 export function MessageThread({
   projectId,
@@ -38,7 +36,12 @@ export function MessageThread({
     setPending(true)
     setError(null)
     try {
-      await sendMessage(projectId, user.uid, trimmed)
+      await sendMessage(
+        projectId,
+        user.uid,
+        user.displayName ?? user.email ?? 'Member',
+        trimmed,
+      )
       setBody('')
     } catch {
       setError('The message did not send. Try again.')
@@ -70,11 +73,10 @@ export function MessageThread({
                   }
                 >
                   <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                    {/* The counterparty is always me for now. Multi-member
-                        client teams need sender name resolution, blocked
-                        today because rules only allow reading your own
-                        users doc. Revisit with the admin phase. */}
-                    {own ? 'You' : 'Reda'}
+                    {/* senderName is denormalized at send time. The 'Reda'
+                        fallback covers messages written before senderName
+                        existed; reseeding removes that path entirely. */}
+                    {own ? 'You' : (message.senderName ?? 'Reda')}
                   </p>
                   <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">
                     {message.body}

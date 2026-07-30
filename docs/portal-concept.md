@@ -198,10 +198,12 @@ Open detail: the guest-facing URL scheme must coexist with the existing static `
 - Email notifications are core scope
 - `memberUids` array instead of single `clientUid`
 - Client sign-in v1 is email/password via the client SDK; email-link and password reset deferred
+- Admin surface is a panel inside this app at `/portal/admin`, gated by the admin custom claim
+- Client accounts are created through `POST /api/admin/clients`, an authenticated route using the Admin SDK. It is the only server-side write surface; everything else is client SDK under the rules
+- Messages carry a denormalized `senderName` so both viewers can label a thread without extra reads (clients cannot read other users' docs)
 
 ## Remaining open items
 
-- Admin authoring surface: admin panel inside this app vs something else
 - Document constraints: size/type limits, preview vs download-only
 - Guest URL scheme (see above)
 - Email provider choice and digest-vs-immediate for progress updates

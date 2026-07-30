@@ -62,6 +62,10 @@ export interface DocumentDoc<T = Timestamp> {
 
 export interface MessageDoc<T = Timestamp> {
   senderId: string
+  // Display name denormalized at send time, so both viewers can label
+  // messages without extra reads (clients cannot read other users' docs).
+  // Optional because messages written before phase 3 lack it.
+  senderName?: string
   body: string
   createdAt: T
 }

@@ -36,6 +36,9 @@ const auth = getAuth(app)
 
 const ADMIN_UID = 'admin-user'
 const CLIENT_UID = 'client-user'
+// A second client on no projects, so the admin clients screen and the member
+// picker have realistic data.
+const CLIENT_UID_2 = 'client-user-2'
 const PROJECT_ID = 'atlas-rentals'
 
 async function ensureUser(
@@ -60,6 +63,7 @@ async function main() {
     admin: true,
   })
   await ensureUser(CLIENT_UID, 'client@example.com', 'Atlas Client')
+  await ensureUser(CLIENT_UID_2, 'mina@example.com', 'Mina Client')
 
   const adminUser: UserDoc<Timestamp> = {
     email: 'reda@example.com',
@@ -73,8 +77,15 @@ async function main() {
     role: 'client',
     createdAt: now,
   }
+  const clientUser2: UserDoc<Timestamp> = {
+    email: 'mina@example.com',
+    displayName: 'Mina Client',
+    role: 'client',
+    createdAt: now,
+  }
   await db.doc(`users/${ADMIN_UID}`).set(adminUser)
   await db.doc(`users/${CLIENT_UID}`).set(clientUser)
+  await db.doc(`users/${CLIENT_UID_2}`).set(clientUser2)
 
   const project: ProjectDoc<Timestamp> = {
     name: 'Atlas Rentals',
@@ -139,11 +150,13 @@ async function main() {
 
   const messageFromAdmin: MessageDoc<Timestamp> = {
     senderId: ADMIN_UID,
+    senderName: 'Reda Yahyani',
     body: 'Staging is up. Take a look at the search flow when you have a moment.',
     createdAt: now,
   }
   const messageFromClient: MessageDoc<Timestamp> = {
     senderId: CLIENT_UID,
+    senderName: 'Atlas Client',
     body: 'Looks great. The budget filter is exactly what we discussed.',
     createdAt: now,
   }
@@ -175,7 +188,8 @@ async function main() {
   console.log(`Project: /projects/${PROJECT_ID} (public profile, 1 public update, 2 milestones, 1 progress update, 1 document, 2 messages, 2 requirement requests)`)
   console.log('Auth users (password: password123):')
   console.log(`  admin:  reda@example.com  (uid ${ADMIN_UID}, claim admin=true)`)
-  console.log(`  client: client@example.com (uid ${CLIENT_UID})`)
+  console.log(`  client: client@example.com (uid ${CLIENT_UID}, member of ${PROJECT_ID})`)
+  console.log(`  client: mina@example.com   (uid ${CLIENT_UID_2}, no projects)`)
 }
 
 main().then(

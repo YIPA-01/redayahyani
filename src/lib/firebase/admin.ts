@@ -3,6 +3,7 @@
 // next build.
 
 import { getApps, initializeApp, type App } from 'firebase-admin/app'
+import { getAuth, type Auth } from 'firebase-admin/auth'
 import { getFirestore, type Firestore } from 'firebase-admin/firestore'
 
 function adminApp(): App {
@@ -27,4 +28,8 @@ function adminApp(): App {
 
 export function adminDb(): Firestore {
   return getFirestore(adminApp())
+}
+
+export function adminAuth(): Auth {
+  return getAuth(adminApp())
 }
