@@ -32,7 +32,7 @@ export function ProgressUpdateForm({ projectId }: { projectId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-3 border-t border-zinc-100 pt-6 dark:border-zinc-700/40">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <textarea
         value={body}
         onChange={(event) => setBody(event.target.value)}

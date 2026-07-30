@@ -14,7 +14,9 @@ export interface ArticleWithSlug extends Article {
 async function importArticle(
   articleFilename: string,
 ): Promise<ArticleWithSlug> {
-  let { article } = (await import(`../app/articles/${articleFilename}`)) as {
+  let { article } = (await import(
+    `../app/(site)/articles/${articleFilename}`
+  )) as {
     default: React.ComponentType
     article: Article
   }
@@ -27,7 +29,10 @@ async function importArticle(
 
 export async function getAllArticles() {
   let articleFilenames = await glob('*/page.mdx', {
-    cwd: './src/app/articles',
+    // Articles live in the (site) route group. A wrong path here fails
+    // silently by returning no files, so the articles page and the feed are
+    // checked for real content after any move.
+    cwd: './src/app/(site)/articles',
   })
 
   let articles = await Promise.all(articleFilenames.map(importArticle))

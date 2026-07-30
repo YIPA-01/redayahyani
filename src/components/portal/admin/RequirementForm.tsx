@@ -37,10 +37,7 @@ export function RequirementForm({ projectId }: { projectId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-4 border-t border-zinc-100 pt-6 dark:border-zinc-700/40">
-      <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
-        Request something from the client
-      </p>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <input
           type="text"

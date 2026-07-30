@@ -3,11 +3,13 @@
 // Client-side gate for the protected portal segment. UX only: the real
 // security boundary is firestore.rules. Children never mount before the
 // auth state resolves to signed-in, so protected content cannot flash.
+//
+// This renders before the shell exists, so it fills the viewport itself.
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { Container } from '@/components/Container'
+import { FullPageStatus } from '@/components/portal/shell/PortalStatus'
 import { usePortalAuth } from '@/components/portal/PortalAuthProvider'
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -22,13 +24,13 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   if (status !== 'signed-in') {
     return (
-      <Container className="mt-16 sm:mt-32">
+      <FullPageStatus>
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
           {status === 'loading'
             ? 'Checking your session...'
             : 'Taking you to sign in...'}
         </p>
-      </Container>
+      </FullPageStatus>
     )
   }
 

@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 import { FirebaseError } from 'firebase/app'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 
+import Link from 'next/link'
+
 import { Button } from '@/components/Button'
-import { Container } from '@/components/Container'
 import { usePortalAuth } from '@/components/portal/PortalAuthProvider'
 import { inputClasses } from '@/components/portal/fieldStyles'
 import { auth } from '@/lib/firebase/client'
@@ -50,17 +51,19 @@ export default function SignInPage() {
     }
   }
 
+  // Standalone: there is no site header here, so the card carries its own
+  // way back out to the site.
   return (
-    <Container className="mt-16 sm:mt-32">
-      <div className="mx-auto max-w-md">
-        <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+    <div className="flex min-h-screen w-full items-center justify-center px-6 py-16">
+      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
           Sign in to the project portal.
         </h1>
-        <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+        <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
           This is the private area for my clients. Sign in with the email and
           password I set up for you.
         </p>
-        <form onSubmit={handleSubmit} className="mt-10 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <input
             type="email"
             value={email}
@@ -92,7 +95,13 @@ export default function SignInPage() {
             {pending ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>
+        <Link
+          href="/"
+          className="mt-6 inline-block text-sm text-zinc-500 transition hover:text-teal-500 dark:text-zinc-400 dark:hover:text-teal-400"
+        >
+          Back to the site
+        </Link>
       </div>
-    </Container>
+    </div>
   )
 }

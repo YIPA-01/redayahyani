@@ -39,16 +39,13 @@ export function PublicUpdateForm({
   }
 
   return (
-    <div className="mt-6 border-t border-zinc-100 pt-6 dark:border-zinc-700/40">
-      <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100">
-        Public journal
-      </p>
+    <div>
       {updates.length === 0 ? (
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
           No public entries yet.
         </p>
       ) : (
-        <ol className="mt-3 space-y-4">
+        <ol className="space-y-4">
           {updates.map((update) => (
             <li key={update.id}>
               <div className="flex items-baseline justify-between gap-4">
@@ -66,7 +63,7 @@ export function PublicUpdateForm({
           ))}
         </ol>
       )}
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      <form onSubmit={handleSubmit} className="mt-8 space-y-4 border-t border-zinc-100 pt-6 dark:border-zinc-700/40">
         <input
           type="text"
           value={title}

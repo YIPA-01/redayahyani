@@ -201,6 +201,7 @@ Open detail: the guest-facing URL scheme must coexist with the existing static `
 - Admin surface is a panel inside this app at `/portal/admin`, gated by the admin custom claim
 - Client accounts are created through `POST /api/admin/clients`, an authenticated route using the Admin SDK. It is the only server-side write surface; everything else is client SDK under the rules
 - Messages carry a denormalized `senderName` so both viewers can label a thread without extra reads (clients cannot read other users' docs)
+- The portal is a standalone dashboard shell with a persistent sidebar, and each project section is its own route. It does not render the marketing site's header or footer, which is why the marketing pages moved into a `(site)` route group
 
 ## Remaining open items
 

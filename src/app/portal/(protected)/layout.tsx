@@ -1,5 +1,6 @@
-import { PortalToolbar } from '@/components/portal/PortalToolbar'
+import { PortalDataProvider } from '@/components/portal/PortalDataProvider'
 import { RequireAuth } from '@/components/portal/RequireAuth'
+import { PortalShell } from '@/components/portal/shell/PortalShell'
 
 export default function ProtectedPortalLayout({
   children,
@@ -8,8 +9,9 @@ export default function ProtectedPortalLayout({
 }) {
   return (
     <RequireAuth>
-      <PortalToolbar />
-      {children}
+      <PortalDataProvider>
+        <PortalShell>{children}</PortalShell>
+      </PortalDataProvider>
     </RequireAuth>
   )
 }

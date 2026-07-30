@@ -1,14 +1,15 @@
 'use client'
 
 // Client-side gate for the admin segment. UX only, same as RequireAuth: the
-// real security boundary is firestore.rules plus the API route's own token
-// check. Renders nothing admin-shaped until the claim resolves to true. A
-// non-admin gets a clean dead end rather than a redirect: there is nothing
-// to flash and nowhere better to send them than the link offered.
+// real boundaries are firestore.rules and the API route's own token check.
+// A non-admin gets a clean dead end rather than a redirect, since there is
+// nothing to flash and nowhere better to send them than the link offered.
+//
+// This renders inside the shell, so it is ordinary page content.
 
 import { Button } from '@/components/Button'
-import { Container } from '@/components/Container'
 import { usePortalAuth } from '@/components/portal/PortalAuthProvider'
+import { PortalLoading } from '@/components/portal/shell/PortalStatus'
 
 export function RequireAdmin({ children }: { children: React.ReactNode }) {
   const { status, isAdmin } = usePortalAuth()
@@ -16,19 +17,13 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
   // RequireAuth wraps this gate, so status is signed-in by the time children
   // matter; the null check covers the async claim resolution window.
   if (status !== 'signed-in' || isAdmin === null) {
-    return (
-      <Container className="mt-16 sm:mt-32">
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          Checking your access...
-        </p>
-      </Container>
-    )
+    return <PortalLoading label="Checking your access..." />
   }
 
   if (!isAdmin) {
     return (
-      <Container className="mt-16 sm:mt-32">
-        <h1 className="text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100">
+      <div className="mx-auto w-full max-w-3xl">
+        <h1 className="text-xl font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
           This area is not yours.
         </h1>
         <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
@@ -40,7 +35,7 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
             Back to your portal
           </Button>
         </div>
-      </Container>
+      </div>
     )
   }
 
