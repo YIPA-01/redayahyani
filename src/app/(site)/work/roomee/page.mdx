@@ -1,0 +1,40 @@
+import { CaseStudyLayout } from '@/components/CaseStudyLayout'
+import { caseStudyMetadata } from '@/lib/work/metadata'
+
+export const metadata = caseStudyMetadata('roomee')
+
+export default (props) => <CaseStudyLayout slug="roomee" {...props} />
+
+{/* The facts below come from src/lib/work/projects.ts. Everything marked TODO
+    needs numbers or specifics only Reda has. Placeholder prose is deliberately
+    absent rather than invented. */}
+
+## The problem
+
+Finding a room in Morocco as a student runs on WhatsApp groups, Facebook posts, and word of mouth. Listings are duplicated across a dozen places, most are stale, and the ones that are real are often priced for people with a salary. The search that matters is not "show me apartments in this city", it is "show me the places I can actually afford, near where I study, that are still available".
+
+## What I built
+
+I lead engineering on Roomee. Three pieces carry most of the weight:
+
+**Listing ingestion.** Supply arrives from scattered, inconsistent sources. Ingestion normalizes it into one shape and collapses duplicates, so a single flat posted in four places appears once.
+
+**Search.** Filtering on price, location, and availability, tuned for the query a renter actually has rather than the fields a database happens to store.
+
+**Matching.** Pairing renters with places within their budget and their commute, which is the part that turns a listing directory into something worth coming back to.
+
+{/* TODO: pick the one hard technical problem worth 3 paragraphs. Candidates:
+    deduplication across sources, ranking, or the ingestion pipeline. */}
+
+## What it took
+
+{/* TODO: the constraint that shaped the architecture. Scale? Data quality?
+    Team size? Latency budget? Write the tradeoff you actually made and the
+    option you rejected. */}
+
+## Where it stands
+
+Roomee is live at [roomee.ma](https://roomee.ma).
+
+{/* TODO: outcome. Listings ingested, active users, cities covered, whatever
+    number is both true and shareable. */}

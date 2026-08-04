@@ -186,7 +186,7 @@ No in-app notification center in v1; email is the whole mechanism.
 
 Same repo, same Next.js app. The current static project list (`src/app/projects/page.tsx`, hand-maintained per CLAUDE.md conventions) stays exactly as is. This system is additive: new routes for the client portal (e.g. `/portal`) and for server-rendered public journal pages get layered alongside the existing static pages. Which projects get a Firestore-backed record (and therefore a live public journal) versus staying a plain static case study is a per-project decision, not a migration.
 
-Open detail: the guest-facing URL scheme must coexist with the existing static `/projects` routes (candidates: `/projects/{slug}/journal`, or a distinct prefix like `/work/{slug}`). Decide at implementation planning.
+Resolved: the guest-facing URL scheme is `/work/{slug}`, shared with the static case studies. `/projects` was renamed to `/work` (with permanent redirects in `next.config.mjs`) and the two kinds of page coexist in one namespace: static MDX segments are case studies and take routing priority, while `/work/[slug]` falls through to a project's public profile in Firestore. Live projects are listed on the `/work` index and included in `src/app/sitemap.ts`, so they are discoverable rather than link-only. That is a deliberate choice in favour of the portfolio's purpose, and it raises the stakes on the NDA risk accepted above: a public profile must not be created for a project whose contract forbids it.
 
 ## Decisions log
 
@@ -202,12 +202,13 @@ Open detail: the guest-facing URL scheme must coexist with the existing static `
 - Client accounts are created through `POST /api/admin/clients`, an authenticated route using the Admin SDK. It is the only server-side write surface; everything else is client SDK under the rules
 - Messages carry a denormalized `senderName` so both viewers can label a thread without extra reads (clients cannot read other users' docs)
 - The portal is a standalone dashboard shell with a persistent sidebar, and each project section is its own route. It does not render the marketing site's header or footer, which is why the marketing pages moved into a `(site)` route group
+- Guest URL scheme is `/work/{slug}`, listed on the index and in the sitemap. Guest reads go through `src/lib/work/publicProjects.ts` (Admin SDK, server only), which returns empty rather than throwing when no Firebase credentials are configured, so a build without a Firebase project still ships the static case studies
 
 ## Remaining open items
 
 - Document constraints: size/type limits, preview vs download-only
-- Guest URL scheme (see above)
 - Email provider choice and digest-vs-immediate for progress updates
+- Public profile slugs are free text today, so an admin can save one containing spaces. `/work/[slug]` decodes the route param to cope, but the admin form should probably enforce a slug format
 
 ## Next steps
 

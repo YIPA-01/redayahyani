@@ -1,17 +1,17 @@
 import { ArticleLayout } from '@/components/ArticleLayout'
+import { articleMetadata } from '@/lib/articles'
 
 export const article = {
+  slug: 'what-rag-actually-solves',
   author: 'Reda Yahyani',
   date: '2026-07-10',
   title: 'What Retrieval-Augmented Generation Actually Solves',
   description:
     'RAG gets thrown around as a buzzword, but the problem it solves is simple. Language models don’t know what they weren’t trained on. Here’s what it is, how it works, and where it quietly breaks.',
+  tags: ['AI', 'Retrieval'],
 }
 
-export const metadata = {
-  title: article.title,
-  description: article.description,
-}
+export const metadata = articleMetadata(article)
 
 export default (props) => <ArticleLayout article={article} {...props} />
 

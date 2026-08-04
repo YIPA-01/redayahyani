@@ -139,7 +139,18 @@ function Role({ role }: { role: Role }) {
 function Resume() {
   let resume: Array<Role> = [
     {
-      company: 'Self-employed',
+      company: 'Exploda',
+      title: 'Software Engineer (Freelance)',
+      logo: logoExploda,
+      start: '2026',
+      end: {
+        label: 'Present',
+        dateTime: new Date().getFullYear().toString(),
+      },
+    },
+    
+    {
+      company: 'Freelance',
       title: 'Software Engineer',
       start: '2024',
       end: {
@@ -157,16 +168,6 @@ function Resume() {
     //     dateTime: new Date().getFullYear().toString(),
     //   },
     // },
-    {
-      company: 'Exploda',
-      title: 'Software Engineer (Freelance)',
-      logo: logoExploda,
-      start: '2026',
-      end: {
-        label: 'Present',
-        dateTime: new Date().getFullYear().toString(),
-      },
-    },
   ]
 
   return (

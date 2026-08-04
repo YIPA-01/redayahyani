@@ -1,17 +1,17 @@
 import { ArticleLayout } from '@/components/ArticleLayout'
+import { articleMetadata } from '@/lib/articles'
 
 export const article = {
+  slug: 'freelance-client-handling',
   author: 'Reda Yahyani',
   date: '2025-03-24',
   title: 'The Real Work of Freelancing Isn’t the Code',
   description:
     'The technical work is rarely the hard part of freelancing. Managing expectations, scope, and communication is its own skill, and it’s the one that actually determines how a project goes.',
+  tags: ['Freelancing', 'Practice'],
 }
 
-export const metadata = {
-  title: article.title,
-  description: article.description,
-}
+export const metadata = articleMetadata(article)
 
 export default (props) => <ArticleLayout article={article} {...props} />
 

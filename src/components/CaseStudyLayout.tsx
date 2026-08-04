@@ -1,0 +1,108 @@
+import Link from 'next/link'
+
+import { BackButton } from '@/components/BackButton'
+import { Container } from '@/components/Container'
+import { Prose } from '@/components/Prose'
+import { CoverImage } from '@/components/work/CoverImage'
+import { getWorkProject } from '@/lib/work/projects'
+
+function LinkIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
+      <path
+        d="M15.712 11.823a.75.75 0 1 0 1.06 1.06l-1.06-1.06Zm-4.95 1.768a.75.75 0 0 0 1.06-1.06l-1.06 1.06Zm-2.475-1.414a.75.75 0 1 0-1.06-1.06l1.06 1.06Zm4.95-1.768a.75.75 0 1 0-1.06 1.06l1.06-1.06Zm3.359.53-.884.884 1.06 1.06.885-.883-1.061-1.06Zm-4.95-2.12 1.414-1.415L12 6.344l-1.415 1.413 1.061 1.061Zm0 3.535a2.5 2.5 0 0 1 0-3.536l-1.06-1.06a4 4 0 0 0 0 5.656l1.06-1.06Zm4.95-4.95a2.5 2.5 0 0 1 0 3.535L17.656 12a4 4 0 0 0 0-5.657l-1.06 1.06Zm1.06-1.06a4 4 0 0 0-5.656 0l1.06 1.06a2.5 2.5 0 0 1 3.536 0l1.06-1.06Zm-7.07 7.07.176.177 1.06-1.06-.176-.177-1.06 1.06Zm-3.183-.353.884-.884-1.06-1.06-.884.883 1.06 1.06Zm4.95 2.121-1.414 1.414 1.06 1.06 1.415-1.413-1.06-1.061Zm0-3.536a2.5 2.5 0 0 1 0 3.536l1.06 1.06a4 4 0 0 0 0-5.656l-1.06 1.06Zm-4.95 4.95a2.5 2.5 0 0 1 0-3.535L6.344 12a4 4 0 0 0 0 5.656l1.06-1.06Zm-1.06 1.06a4 4 0 0 0 5.657 0l-1.061-1.06a2.5 2.5 0 0 1-3.535 0l-1.061 1.06Zm7.07-7.07-.176-.177-1.06 1.06.176.178 1.06-1.061Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div>
+      <dt className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+        {label}
+      </dt>
+      <dd className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{value}</dd>
+    </div>
+  )
+}
+
+/**
+ * Case study chrome. Takes the slug rather than the whole project so an MDX
+ * file cannot drift from src/lib/work/projects.ts, which stays the single
+ * source of truth for names, roles, stacks, and links.
+ */
+export function CaseStudyLayout({
+  slug,
+  children,
+}: {
+  slug: string
+  children: React.ReactNode
+}) {
+  const project = getWorkProject(slug)
+  if (!project) {
+    throw new Error(
+      `No entry for "${slug}" in src/lib/work/projects.ts. Add it there before adding the case study.`,
+    )
+  }
+
+  return (
+    <Container className="mt-16 lg:mt-32">
+      <div className="xl:relative">
+        <div className="mx-auto max-w-2xl">
+          <BackButton label="Go back to work" />
+          <article>
+            <header className="flex flex-col">
+              <p className="order-first text-sm text-zinc-400 dark:text-zinc-500">
+                {project.role}
+                {project.year ? `, ${project.year}` : ''}
+              </p>
+              <h1 className="mt-4 text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+                {project.name}
+              </h1>
+              <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+                {project.description}
+              </p>
+            </header>
+
+            <div className="mt-10 aspect-[16/10] w-full overflow-hidden rounded-2xl bg-zinc-100 ring-1 ring-zinc-900/5 dark:bg-zinc-800 dark:ring-white/10">
+              <CoverImage
+                project={project}
+                priority
+                sizes="(min-width: 640px) 42rem, 100vw"
+              />
+            </div>
+
+            <dl className="mt-10 grid grid-cols-2 gap-6 border-y border-zinc-100 py-6 sm:grid-cols-3 dark:border-zinc-700/40">
+              <MetaRow label="Role" value={project.role} />
+              {project.year && <MetaRow label="When" value={project.year} />}
+              <MetaRow label="Stack" value={project.stack.join(', ')} />
+              {project.builtWith && (
+                <MetaRow label="With" value={project.builtWith.name} />
+              )}
+              {project.link && (
+                <MetaRow
+                  label="Live"
+                  value={
+                    <Link
+                      href={project.link.href}
+                      className="flex items-center text-teal-500 transition hover:text-teal-600 dark:hover:text-teal-400"
+                    >
+                      <LinkIcon className="h-4 w-4 flex-none" />
+                      <span className="ml-1.5">{project.link.label}</span>
+                    </Link>
+                  }
+                />
+              )}
+            </dl>
+
+            <Prose className="mt-10" data-mdx-content>
+              {children}
+            </Prose>
+          </article>
+        </div>
+      </div>
+    </Container>
+  )
+}

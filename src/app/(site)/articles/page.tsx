@@ -2,6 +2,7 @@ import { type Metadata } from 'next'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
+import { Tags } from '@/components/Tags'
 import { type ArticleWithSlug, getAllArticles } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
 
@@ -21,6 +22,12 @@ function Article({ article }: { article: ArticleWithSlug }) {
           {formatDate(article.date)}
         </Card.Eyebrow>
         <Card.Description>{article.description}</Card.Description>
+        {article.tags && article.tags.length > 0 && (
+          // z-10 keeps the chips above the Card.Link overlay.
+          <div className="relative z-10 mt-4">
+            <Tags tags={article.tags} />
+          </div>
+        )}
         <Card.Cta>Read article</Card.Cta>
       </Card>
       <Card.Eyebrow

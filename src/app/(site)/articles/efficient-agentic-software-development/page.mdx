@@ -1,17 +1,17 @@
 import { ArticleLayout } from '@/components/ArticleLayout'
+import { articleMetadata } from '@/lib/articles'
 
 export const article = {
+  slug: 'efficient-agentic-software-development',
   author: 'Reda Yahyani',
   date: '2026-05-11',
   title: 'Efficient Agentic Software Development',
   description:
     'Coding agents are capable, but capability isn’t the same as judgment. Some notes on what actually makes agentic development fast and reliable, instead of just fast.',
+  tags: ['AI', 'Practice'],
 }
 
-export const metadata = {
-  title: article.title,
-  description: article.description,
-}
+export const metadata = articleMetadata(article)
 
 export default (props) => <ArticleLayout article={article} {...props} />
 

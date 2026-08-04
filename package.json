@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "NODE_OPTIONS=--no-experimental-strip-types next dev",
+    "build": "NODE_OPTIONS=--no-experimental-strip-types next build",
     "start": "next start",
     "lint": "next lint",
     "emulators": "firebase emulators:start --project demo-portal --import=./.emulator-data --export-on-exit=./.emulator-data",
     "seed": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 tsx scripts/seed-emulator.ts",
     "test:rules": "firebase emulators:exec --project demo-portal --only firestore \"vitest run tests/rules\"",
     "test:rules:watch": "FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 vitest tests/rules"
+  },
+  "engines": {
+    "node": ">=22.6"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {

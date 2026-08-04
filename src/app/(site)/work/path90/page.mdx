@@ -1,0 +1,38 @@
+import { CaseStudyLayout } from '@/components/CaseStudyLayout'
+import { caseStudyMetadata } from '@/lib/work/metadata'
+
+export const metadata = caseStudyMetadata('path90')
+
+export default (props) => <CaseStudyLayout slug="path90" {...props} />
+
+{/* The facts below come from src/lib/work/projects.ts. Everything marked TODO
+    needs specifics only Reda has. Placeholder prose is deliberately absent
+    rather than invented. */}
+
+## The problem
+
+Parole is a schedule of obligations with real consequences for missing one: appointments, check-ins, conditions that vary per person. The people managing that schedule are the least well served by a normal web app. They may not have a stable connection, a recent phone, or a data plan that survives the month. An app that only works online is an app that fails exactly when someone needs to confirm what they owe and when.
+
+## What I built
+
+A progressive web app, built with Exploda, that tracks obligations, appointments, and check-ins in one place.
+
+**Offline-first.** The app works with no connection and reconciles when one returns. That is the central architectural decision and it constrains everything downstream: what can be written locally, how conflicts resolve, and what the user sees when the two disagree.
+
+**PWA rather than native.** Installable from a link, no app store, no install friction for someone on a borrowed or low-end device.
+
+{/* TODO: the sync and conflict-resolution model. What happens when the same
+    record changes locally and remotely? This is the interesting part. */}
+
+## What it took
+
+{/* TODO: the constraint that shaped it. Offline storage limits? Notification
+    delivery without a connection? Compliance or privacy requirements around
+    parole data? Write the tradeoff and the option you rejected. */}
+
+## Where it stands
+
+Path90 is live at [path90app.com](https://path90app.com).
+
+{/* TODO: outcome. Users, jurisdictions, retention, whatever is true and
+    shareable. */}

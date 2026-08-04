@@ -77,6 +77,16 @@ export default function About() {
               Today, I’m a freelance software engineer ,
               where I work on helping to build out the product from the ground up.
             </p>
+            <p>
+              Away from the terminal I write poetry. It lives on its own page,{' '}
+              <Link
+                href="/writing"
+                className="font-medium text-teal-500 transition hover:text-teal-600 dark:hover:text-teal-400"
+              >
+                here
+              </Link>
+              .
+            </p>
           </div>
         </div>
         <div className="lg:pl-20">
