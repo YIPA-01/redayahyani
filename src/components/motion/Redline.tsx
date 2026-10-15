@@ -91,7 +91,7 @@ export function Redline({
       {spec && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute animate-[redline_180ms_ease-out] font-mono text-[10px] uppercase leading-none tracking-[0.06em] text-coral motion-reduce:animate-none"
+          className="pointer-events-none absolute animate-[redline_180ms_ease-out] font-mono text-[10px] uppercase leading-none tracking-[0.06em] text-coral-text motion-reduce:animate-none"
           style={{
             left: spec.left,
             top: spec.top,
@@ -100,7 +100,7 @@ export function Redline({
           }}
         >
           {/* Type spec */}
-          <span className="absolute -top-8 left-0 whitespace-nowrap rounded-sm bg-coral px-1.5 py-1 text-[10px] text-white">
+          <span className="absolute -top-8 left-0 whitespace-nowrap rounded-sm bg-coral-text px-1.5 py-1 text-[10px] text-white">
             {spec.label}
           </span>
           {/* Width */}

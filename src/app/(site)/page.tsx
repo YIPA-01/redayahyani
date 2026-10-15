@@ -55,14 +55,14 @@ export default async function Home() {
         <div className="mt-5 flex flex-wrap justify-center gap-x-8 gap-y-3 text-[0.9375rem]">
           <Link
             href="/services#contact"
-            className="font-medium transition hover:text-coral"
+            className="font-medium transition hover:text-coral-text"
           >
             Start a project →
           </Link>
           <a
             href={contact.resume}
             download="Reda-Yahyani-Resume.pdf"
-            className="transition hover:text-coral"
+            className="transition hover:text-coral-text"
           >
             Download CV ↓
           </a>

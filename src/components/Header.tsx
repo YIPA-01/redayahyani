@@ -13,6 +13,7 @@ import {
   TransitionChild,
 } from '@headlessui/react'
 
+import { DisplayPreferences } from '@/components/a11y/DisplayPreferences'
 import { Container } from '@/components/Container'
 import { FillButton } from '@/components/FillButton'
 import { Marquee } from '@/components/sections/Marquee'
@@ -144,7 +145,7 @@ function MobileNavigation(
                   <PopoverButton
                     as={Link}
                     href="/services#contact"
-                    className="block py-2 font-medium text-coral"
+                    className="block py-2 font-medium text-coral-text"
                   >
                     Start a project
                   </PopoverButton>
@@ -180,8 +181,41 @@ function ThemeToggle() {
   )
 }
 
+function PauseIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" {...props}>
+      <path d="M5 3.5v9M11 3.5v9" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function PlayIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" {...props}>
+      <path d="M5 3.5v9l7-4.5z" strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+const MARQUEE_PAUSED_KEY = 'marquee-paused'
+
 export function Header() {
   let pathname = usePathname()
+  // The menu scrolls on its own, so it gets a visible pause control
+  // (WCAG 2.2.2), remembered for the visit.
+  let [paused, setPaused] = useState(false)
+  useEffect(() => {
+    try {
+      setPaused(sessionStorage.getItem(MARQUEE_PAUSED_KEY) === 'true')
+    } catch {}
+  }, [])
+  function togglePaused() {
+    let next = !paused
+    setPaused(next)
+    try {
+      sessionStorage.setItem(MARQUEE_PAUSED_KEY, String(next))
+    } catch {}
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-line/60 bg-canvas/85 backdrop-blur">
@@ -201,14 +235,32 @@ export function Header() {
           </Link>
           {/* The navigation itself scrolls, on screens wide enough for it;
               phones keep the Menu button. */}
-          <Marquee
-            items={navigation}
-            label="Primary"
-            current={pathname}
-            compact
-            className="mx-auto hidden w-full max-w-md md:block"
-          />
-          <div className="ml-auto flex items-center gap-2 md:ml-0">
+          <div className="mx-auto hidden w-full max-w-md items-center gap-1.5 md:flex">
+            <Marquee
+              items={navigation}
+              label="Primary"
+              current={pathname}
+              compact
+              paused={paused}
+              className="min-w-0 flex-1"
+            />
+            {/* Hidden when the visitor's motion settings already stop it. */}
+            <button
+              type="button"
+              onClick={togglePaused}
+              aria-pressed={paused}
+              aria-label="Pause the menu animation"
+              className="marquee-pause flex h-7 w-7 flex-none items-center justify-center rounded-full border border-line fill-muted stroke-muted text-muted transition hover:border-ink hover:fill-ink hover:stroke-ink motion-reduce:hidden"
+            >
+              {paused ? (
+                <PlayIcon className="h-3 w-3" />
+              ) : (
+                <PauseIcon className="h-3 w-3" />
+              )}
+            </button>
+          </div>
+          <div className="ml-auto flex items-center gap-1 md:ml-0">
+            <DisplayPreferences />
             <ThemeToggle />
             <FillButton
               href="/services#contact"

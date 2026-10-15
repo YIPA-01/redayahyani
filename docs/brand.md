@@ -143,6 +143,17 @@ Motion exists to show the two sides of the work: design (serif, redlines, wirefr
 - Hover feedback is small: a 4 to 6px lift, an arrow nudging 2px, a slice pulling apart.
 - Everything that moves on its own stops under `prefers-reduced-motion`.
 
+### Accessibility
+
+The site is held to WCAG 2.2 AA and designed equity first: for the people a design is most likely to leave out (screen reader, keyboard and switch users; people for whom motion is a barrier; low-vision and dyslexic readers; slow connections and old phones). The public account of it is `/accessibility`.
+
+- **Coral for graphics, `coral-text` for words.** Plain coral is 3.3:1 on the light canvas: fine for shapes, borders and fills (3:1), too light for text (4.5:1). Text uses `text-coral-text` (5.2:1 light, 6.8:1 dark). The `accent-500` and `600` shades are the dark, text-safe coral. Secondary text is `muted`, never `zinc-400`.
+- **Display preferences** (`src/components/a11y/DisplayPreferences.tsx`, logic in `src/lib/a11y/`): Motion (System, Reduced, Off), Text size (100, 115, 130%), Typeface (Default, Readable: Atkinson Hyperlegible, loaded only on demand), Contrast (Standard, High), Underline links. Stored in localStorage and applied as `data-motion`, `data-text`, `data-type`, `data-contrast`, `data-underline` on `<html>` by an inline script before first paint.
+- **Every moving thing obeys Motion, and anything that moves on its own has a pause button** (WCAG 2.2.2): the header marquee and the statement morph have visible pause controls. In code, use `motionLevel()` or `useDisplay()`, never `matchMedia('(prefers-reduced-motion)')` alone: the OS setting counts as Off, and the site setting can be stricter than the OS.
+- **Readable type** swaps every display face for Atkinson, sets italics upright and uppercase labels to normal case, and stops the morph.
+- **Structure:** a skip link first in the tab order to `<main id="main">`; one coral focus ring for everything; icon buttons always have a visible or accessible name; headings never skip a level.
+- **Checked with** axe-core on every main page in both themes (zero violations at the time of writing), keyboard only, and computed contrast for every text token pair in every mode.
+
 ### Sections
 
 Reusable pieces live in `src/components/sections/`: `StatementCard`, `Marquee`, `ProjectCards`, `RoleSplit`, `Disciplines`, `ProcessDiagram`. The CV footer reads `src/lib/cv.ts`, which mirrors `public/Resume.pdf`.

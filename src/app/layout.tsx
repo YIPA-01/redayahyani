@@ -1,9 +1,15 @@
 import { type Metadata } from 'next'
-import { DM_Mono, Instrument_Serif, Jost } from 'next/font/google'
+import {
+  Atkinson_Hyperlegible,
+  DM_Mono,
+  Instrument_Serif,
+  Jost,
+} from 'next/font/google'
 import localFont from 'next/font/local'
 import clsx from 'clsx'
 
 import { Providers } from '@/app/providers'
+import { preferencesScript } from '@/lib/a11y/preferences'
 import { siteUrl } from '@/lib/siteUrl'
 
 import '@/styles/tailwind.css'
@@ -41,6 +47,20 @@ const pixel = localFont({
   variable: '--font-pixel',
 })
 
+// Atkinson Hyperlegible, designed by the Braille Institute for low-vision
+// readers. It replaces every display face when a visitor turns on Readable
+// type (src/components/a11y/DisplayPreferences.tsx). Not preloaded: it only
+// downloads for visitors who ask for it, so nobody else pays for it on a slow
+// connection.
+const readable = Atkinson_Hyperlegible({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  preload: false,
+  variable: '--font-readable',
+})
+
 export const metadata: Metadata = {
   // Every page's Open Graph image and canonical URL is declared relative and
   // resolved against this, so a preview deployment never advertises the
@@ -73,9 +93,15 @@ export default function RootLayout({
         serif.variable,
         mono.variable,
         pixel.variable,
+        readable.variable,
       )}
       suppressHydrationWarning
     >
+      <head>
+        {/* Display preferences, applied before first paint. See
+            src/lib/a11y/preferences.ts. */}
+        <script dangerouslySetInnerHTML={{ __html: preferencesScript }} />
+      </head>
       <body className="flex h-full bg-zinc-50 dark:bg-black">
         {/* No chrome here on purpose: the (site) group owns the header and
             footer, and the portal renders its own dashboard shell. Providers

@@ -47,9 +47,11 @@ export function ShareLinks({ url, title }: { url: string; title: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <span className="text-sm text-zinc-400 dark:text-zinc-500">Share</span>
+      <span className="text-sm text-muted">Share</span>
       <Link
-        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+          url,
+        )}`}
         target="_blank"
         rel="noopener noreferrer"
         className={buttonClasses}
@@ -58,13 +60,14 @@ export function ShareLinks({ url, title }: { url: string; title: string }) {
         LinkedIn
       </Link>
       <Link
-        href={`https://x.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`}
+        href={`https://x.com/intent/tweet?url=${encodeURIComponent(
+          url,
+        )}&text=${encodeURIComponent(title)}`}
         target="_blank"
         rel="noopener noreferrer"
         className={buttonClasses}
       >
-        <XIcon className="h-4 w-4 fill-current" />
-        X
+        <XIcon className="h-4 w-4 fill-current" />X
       </Link>
       <button type="button" onClick={copy} className={buttonClasses}>
         <CopyIcon className="h-4 w-4" />

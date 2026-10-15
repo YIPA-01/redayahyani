@@ -38,11 +38,11 @@ function MarqueeSet({
               aria-hidden={repeat && !hidden ? true : undefined}
               aria-current={active && !repeat ? 'page' : undefined}
               className={clsx(
-                'whitespace-nowrap font-mono uppercase tracking-[0.08em] transition hover:text-coral',
+                'whitespace-nowrap font-mono uppercase tracking-[0.08em] transition hover:text-coral-text',
                 compact
                   ? 'px-2.5 py-1 text-xs'
                   : 'px-3 py-2 text-[clamp(0.8125rem,1.6vw,1rem)]',
-                active && 'text-coral',
+                active && 'text-coral-text',
               )}
             >
               {item.label}
@@ -67,6 +67,7 @@ export function Marquee({
   current,
   compact = false,
   repeat = 3,
+  paused = false,
   className,
 }: {
   items: Array<MarqueeItem>
@@ -74,6 +75,8 @@ export function Marquee({
   current?: string
   compact?: boolean
   repeat?: number
+  // Set by a visible pause control (WCAG 2.2.2); see the header.
+  paused?: boolean
   className?: string
 }) {
   let run = Array.from({ length: repeat }, () => items).flat()
@@ -81,6 +84,7 @@ export function Marquee({
   return (
     <nav
       aria-label={label}
+      data-paused={paused || undefined}
       className={clsx(
         'group overflow-hidden border-ink [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]',
         compact ? 'rounded-full border' : 'rounded-xl border-[1.5px]',

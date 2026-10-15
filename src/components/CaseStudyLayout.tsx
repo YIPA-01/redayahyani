@@ -20,7 +20,7 @@ function LinkIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+      <dt className="text-xs font-medium uppercase tracking-wide text-muted">
         {label}
       </dt>
       <dd className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{value}</dd>
@@ -54,7 +54,7 @@ export function CaseStudyLayout({
           <BackButton label="Go back to work" />
           <article>
             <header className="flex flex-col">
-              <p className="order-first text-sm text-zinc-400 dark:text-zinc-500">
+              <p className="order-first text-sm text-muted">
                 {project.role}
                 {project.year ? `, ${project.year}` : ''}
               </p>
@@ -87,7 +87,7 @@ export function CaseStudyLayout({
                   value={
                     <Link
                       href={project.link.href}
-                      className="flex items-center text-accent-500 transition hover:text-accent-600 dark:hover:text-accent-400"
+                      className="flex items-center text-coral-text transition hover:text-accent-600 dark:hover:text-accent-400"
                     >
                       <LinkIcon className="h-4 w-4 flex-none" />
                       <span className="ml-1.5">{project.link.label}</span>

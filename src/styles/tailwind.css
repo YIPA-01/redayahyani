@@ -15,6 +15,9 @@
     --muted: 105 101 110;
     --line: 217 213 220;
     --coral: 240 84 63;
+    /* Coral for words. Plain coral is 3.3:1 on the light canvas, fine for
+       shapes and borders (3:1) but not for text (4.5:1). */
+    --coral-text: 194 57 31;
     --pink: 242 154 165;
     --lilac: 199 169 217;
   }
@@ -27,8 +30,92 @@
     --muted: 165 160 171;
     --line: 52 48 58;
     --coral: 255 111 90;
+    --coral-text: 255 111 90;
     --pink: 184 86 106;
     --lilac: 108 83 144;
+  }
+
+  /* Display preferences (src/lib/a11y/preferences.ts). Each is a data
+     attribute on <html>, set before first paint. */
+
+  /* Text size: everything is sized in rem, so the whole site scales. */
+  html[data-text='115'] {
+    font-size: 115%;
+  }
+  html[data-text='130'] {
+    font-size: 130%;
+  }
+
+  /* High contrast: stronger secondary text and hairlines, and coral that
+     reads as text everywhere. */
+  html[data-contrast='high'] {
+    --muted: 62 58 68;
+    --line: 140 134 146;
+    --coral: 194 57 31;
+    --coral-text: 160 44 22;
+  }
+  html.dark[data-contrast='high'] {
+    --muted: 214 210 220;
+    --line: 120 114 128;
+    --coral: 255 140 122;
+    --coral-text: 255 160 145;
+  }
+
+  /* Readable type: every display face becomes Atkinson Hyperlegible, upright.
+     The selector outranks the next/font classes that define these
+     variables. */
+  html[data-type='readable'] {
+    --font-sans: var(--font-readable);
+    --font-serif: var(--font-readable);
+    --font-mono: var(--font-readable);
+    --font-pixel: var(--font-readable);
+  }
+  html[data-type='readable'] .italic {
+    font-style: normal;
+  }
+  html[data-type='readable'] .uppercase {
+    text-transform: none;
+  }
+
+  /* Underlined links, for people who cannot rely on color alone. */
+  html[data-underline='true'] a:not([aria-hidden='true']) {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /* One visible focus ring for everything keyboard reachable. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--coral-text));
+    outline-offset: 3px;
+  }
+
+  /* Motion. Reduced: nothing moves on its own. Off: nothing moves at all.
+     The JS side reads the same attribute through motionLevel(). */
+  html[data-motion='reduced'] .animate-marquee,
+  html[data-motion='reduced'] [data-autoplay] {
+    animation: none !important;
+  }
+  html[data-motion='reduced'] .process-dot,
+  html[data-motion='off'] .process-dot {
+    display: none;
+  }
+  html[data-motion='off'] *,
+  html[data-motion='off'] *::before,
+  html[data-motion='off'] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* The header marquee's own pause button (WCAG 2.2.2). Not needed when
+     motion preferences already hold the marquee still. */
+  html[data-motion='reduced'] .marquee-pause,
+  html[data-motion='off'] .marquee-pause {
+    display: none;
+  }
+  [data-paused='true'] .animate-marquee {
+    animation-play-state: paused !important;
   }
 }
 

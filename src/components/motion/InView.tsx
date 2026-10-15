@@ -3,6 +3,8 @@
 import { useEffect, useRef } from 'react'
 import clsx from 'clsx'
 
+import { motionLevel } from '@/lib/a11y/preferences'
+
 // Runs a section's entrance the first time a quarter of it is on screen.
 //
 // Children describe only the hidden start, with the armed variant:
@@ -28,7 +30,9 @@ export function InView({
     const element = ref.current
     if (!element) return
 
-    let reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Entrances only play with full motion: the OS setting and the site's
+    // Display preferences both have to allow it.
+    let reduce = motionLevel() !== 'full'
     let rect = element.getBoundingClientRect()
     let onScreen =
       rect.top < window.innerHeight * (1 - threshold) && rect.bottom > 0

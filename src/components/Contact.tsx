@@ -104,7 +104,7 @@ export function Contact() {
           required
           className="w-full min-w-0 resize-none appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-accent-500 focus:outline-none focus:ring-4 focus:ring-accent-500/10 sm:text-sm dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-accent-400 dark:focus:ring-accent-400/10"
         />
-        <div className="mt-4 flex gap-3">
+        <div className="mt-4 flex flex-wrap gap-3">
           <Button
             type="button"
             variant="secondary"
@@ -120,6 +120,9 @@ export function Contact() {
               unoptimized
               className="h-4 w-4 flex-none"
             />
+            {/* Visible words, not just a logo: clearer for everyone, and the
+                button's name for screen readers. */}
+            Send on WhatsApp
           </Button>
           <Button
             type="button"
@@ -136,6 +139,7 @@ export function Contact() {
               unoptimized
               className="h-4 w-4 flex-none"
             />
+            Send by email
           </Button>
         </div>
       </div>

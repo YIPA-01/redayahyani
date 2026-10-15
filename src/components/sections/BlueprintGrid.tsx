@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+import { useDisplay } from '@/lib/a11y/useDisplay'
+
 // The statement card's background: a drafting surface. A 24px graph-paper
 // grid (CSS, .blueprint-grid in src/styles/tailwind.css) with a few coral
 // hairline shapes snapped to it, like a designer's construction sketch. With
@@ -209,6 +211,7 @@ export function BlueprintGrid() {
   let rootRef = useRef<HTMLDivElement>(null)
   let groupRefs = useRef<Record<string, SVGGElement | null>>({})
   let guideRef = useRef<SVGGElement>(null)
+  let display = useDisplay()
   let [size, setSize] = useState<{ width: number; height: number } | null>(null)
 
   // Lay out against the card's real size.
@@ -231,8 +234,9 @@ export function BlueprintGrid() {
     const card = root?.parentElement
     if (!root || !card || shapes.length === 0) return
     let canHover = window.matchMedia('(hover: hover) and (pointer: fine)')
-    let reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
-    if (!canHover.matches || reduce.matches) return
+    // The reaction answers the pointer rather than moving on its own, so it
+    // stays under Reduced motion and stops only when motion is Off.
+    if (!canHover.matches || display.motion === 'off') return
 
     let pointer: { x: number; y: number } | null = null
     let state = shapes.map(() => ({ turn: 0, dx: 0, dy: 0 }))
@@ -312,7 +316,7 @@ export function BlueprintGrid() {
     }
     // shapes is derived from size; re-attach when the layout changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [size])
+  }, [size, display.motion])
 
   return (
     <div

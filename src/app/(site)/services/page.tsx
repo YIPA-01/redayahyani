@@ -151,7 +151,7 @@ export default function Services() {
             </p>
             <Link
               href="/portal/sign-in"
-              className="inline-block font-medium text-ink transition hover:text-coral"
+              className="inline-block font-medium text-ink transition hover:text-coral-text"
             >
               Client sign in →
             </Link>
@@ -183,7 +183,7 @@ export default function Services() {
                 </p>
                 <h3 className="mt-2 text-xl font-medium">{project.name}</h3>
                 <p className="mt-2 text-muted">{project.tagline}</p>
-                <p className="mt-4 text-sm font-medium transition group-hover:text-coral">
+                <p className="mt-4 text-sm font-medium transition group-hover:text-coral-text">
                   Read the case study →
                 </p>
               </Link>
@@ -217,7 +217,7 @@ export default function Services() {
               Or email me directly at{' '}
               <a
                 href={`mailto:${contact.email}`}
-                className="font-medium text-ink transition hover:text-coral"
+                className="font-medium text-ink transition hover:text-coral-text"
               >
                 {contact.email}
               </a>

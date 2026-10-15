@@ -35,6 +35,9 @@ export default {
         muted: 'rgb(var(--muted) / <alpha-value>)',
         line: 'rgb(var(--line) / <alpha-value>)',
         coral: 'rgb(var(--coral) / <alpha-value>)',
+        // Coral for words: plain coral is too light for text on the light
+        // canvas (3.3:1). Use coral for shapes and borders, this for text.
+        'coral-text': 'rgb(var(--coral-text) / <alpha-value>)',
         // Not 'pink': that would replace Tailwind's pink scale, which
         // src/styles/prism.css uses for code highlighting.
         blush: 'rgb(var(--pink) / <alpha-value>)',
@@ -46,8 +49,10 @@ export default {
           100: '#fde4df',
           300: '#ff9a8a',
           400: '#ff6f5a',
-          500: '#f0543f',
-          600: '#d63f2b',
+          // 500 and 600 are text colors on the light canvas (links, CTAs), so
+          // they are the darker, 4.5:1-safe coral.
+          500: '#c2391f',
+          600: '#a8301a',
           700: '#b23222',
         },
       },

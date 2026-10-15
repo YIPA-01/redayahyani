@@ -103,9 +103,13 @@ function ProjectCard({ project }: { project: WorkProject }) {
         )}
       </Cover>
       <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-        {href ? <Card.Link href={href}>{project.name}</Card.Link> : project.name}
+        {href ? (
+          <Card.Link href={href}>{project.name}</Card.Link>
+        ) : (
+          project.name
+        )}
       </h2>
-      <p className="relative z-10 mt-1 text-sm text-zinc-400 dark:text-zinc-500">
+      <p className="relative z-10 mt-1 text-sm text-muted">
         {project.role}
         {project.year ? `, ${project.year}` : ''}
       </p>
@@ -115,7 +119,7 @@ function ProjectCard({ project }: { project: WorkProject }) {
         <Card.Cta>Read the case study</Card.Cta>
       ) : (
         project.link && (
-          <p className="relative z-10 mt-4 flex text-sm font-medium text-zinc-400 transition group-hover:text-accent-500 dark:text-zinc-200">
+          <p className="relative z-10 mt-4 flex text-sm font-medium text-muted transition group-hover:text-coral-text dark:text-zinc-200">
             <LinkIcon className="h-6 w-6 flex-none" />
             <span className="ml-2">{project.link.label}</span>
           </p>
@@ -149,9 +153,7 @@ function LiveCard({
           <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
           In progress
         </span>
-        <span className="text-xs text-zinc-400 dark:text-zinc-500">
-          {project.phase}
-        </span>
+        <span className="text-xs text-muted">{project.phase}</span>
       </div>
       <h2 className="mt-3 text-base font-semibold text-zinc-800 dark:text-zinc-100">
         <Card.Link href={href}>{project.title}</Card.Link>

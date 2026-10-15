@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 
+import { MorphPauseButton } from '@/components/motion/MorphPauseButton'
 import { MorphText } from '@/components/motion/MorphText'
 import { BlueprintGrid } from '@/components/sections/BlueprintGrid'
 
@@ -28,6 +29,7 @@ export function StatementCard({
       <p className="mx-auto max-w-[26ch] text-balance text-start font-serif text-[clamp(1.75rem,4.6vw,3.5rem)] italic leading-[1.15] tracking-[-0.01em] text-ink dark:text-white">
         <MorphText text={text} />
       </p>
+      <MorphPauseButton />
     </div>
   )
 }

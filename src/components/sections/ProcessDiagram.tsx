@@ -265,7 +265,7 @@ function Diagram({ vertical }: { vertical: boolean }) {
           dot is simply not shown then. */}
       <circle
         r="5"
-        className="fill-coral transition-opacity duration-500 group-data-[armed=true]/inview:opacity-0 motion-reduce:hidden"
+        className="process-dot fill-coral transition-opacity duration-500 group-data-[armed=true]/inview:opacity-0 motion-reduce:hidden"
         style={{ transitionDelay: `${phases.length * STAGGER + 600}ms` }}
       >
         <animateMotion dur="12s" repeatCount="indefinite" path={loop} />
@@ -303,7 +303,7 @@ export function ProcessDiagram() {
     <div>
       <Redline className="mb-10 sm:mb-14">
         <h2 className="mx-auto max-w-[30ch] text-balance text-center text-[clamp(1.5rem,3.4vw,2.375rem)] font-medium leading-[1.3]">
-          I work across <span className="text-coral">every stage</span> of
+          I work across <span className="text-coral-text">every stage</span> of
           building a product, and{' '}
           <span className="relative whitespace-nowrap pr-[0.2em] before:absolute before:inset-x-0 before:bottom-[0.02em] before:h-0.5 before:bg-current after:absolute after:bottom-[-0.12em] after:right-0 after:h-[0.32em] after:w-[0.32em] after:rotate-45 after:border-r-2 after:border-t-2 after:border-current">
             loop back

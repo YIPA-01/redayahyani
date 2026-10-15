@@ -17,6 +17,7 @@
 │   └── /articles/<slug>  Article (MDX)
 ├── /about                About
 ├── /writing              Poetry (footer and About only)
+├── /accessibility        What the site supports, Display preferences, how to report a barrier
 └── /portal               Client portal (separate shell, unchanged)
 
 Removed:  /thank-you (template leftover, there is no newsletter)
@@ -58,7 +59,7 @@ Solid lines are header navigation and index links. Dotted lines are in-page link
 
 **Header** (freelance first): Work, Services, Articles, About, scrolling in a compact marquee in the middle of the header, with the current page in coral (Lab joins after Articles once it exists). Phones get the same list in the Menu popover instead. A **Start a project** button sits at the end and goes to `/services#contact`.
 
-**Footer:** Work, Services, Articles, About, Writing (Lab joins once it exists), Client portal sign-in (`/portal/sign-in`), the email address, and socials (GitHub, LinkedIn, X).
+**Footer:** Work, Services, Articles, About, Writing, Accessibility (Lab joins once it exists), Client portal sign-in (`/portal/sign-in`), the email address, and socials (GitHub, LinkedIn, X).
 
 `/writing` stays out of the header on purpose, as before.
 

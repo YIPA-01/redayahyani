@@ -44,7 +44,10 @@ export async function generateMetadata({
       type: 'article',
       url,
       images: [
-        ogImageUrl({ title: project.title, eyebrow: `In progress, ${project.phase}` }),
+        ogImageUrl({
+          title: project.title,
+          eyebrow: `In progress, ${project.phase}`,
+        }),
       ],
     },
     twitter: {
@@ -77,9 +80,7 @@ export default async function PublicProjectPage({
                 <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
                 In progress
               </span>
-              <span className="text-sm text-zinc-400 dark:text-zinc-500">
-                {project.phase}
-              </span>
+              <span className="text-sm text-muted">{project.phase}</span>
             </div>
             <h1 className="mt-6 text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
               {project.title}
@@ -94,7 +95,7 @@ export default async function PublicProjectPage({
               Public journal
             </h2>
             {journal.length === 0 ? (
-              <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="mt-6 text-sm text-muted">
                 Nothing published yet. Updates land here as the work moves.
               </p>
             ) : (
@@ -107,7 +108,7 @@ export default async function PublicProjectPage({
                     />
                     <time
                       dateTime={entry.publishedAt}
-                      className="text-sm text-zinc-400 dark:text-zinc-500"
+                      className="text-sm text-muted"
                     >
                       {formatDate(entry.publishedAt)}
                     </time>

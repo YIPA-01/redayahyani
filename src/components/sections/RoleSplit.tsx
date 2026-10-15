@@ -43,9 +43,9 @@ function List({
   return (
     <div>
       <Redline>
-        <h3 className="mb-5 text-[clamp(1.75rem,3.6vw,2.75rem)] font-light leading-[1.1] tracking-[-0.01em]">
+        <h2 className="mb-5 text-[clamp(1.75rem,3.6vw,2.75rem)] font-light leading-[1.1] tracking-[-0.01em]">
           {title}
-        </h3>
+        </h2>
       </Redline>
       <ul className="grid gap-2.5 text-muted">
         {items.map((item, index) => (

@@ -3,6 +3,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 
+import { useDisplay } from '@/lib/a11y/useDisplay'
+
 // The home statement, morphing between the design face (Instrument Serif
 // italic) and two engineering faces (Bitwise pixel, DM Mono). A wave sweeps
 // through the sentence letter by letter, so mid-sweep it is half one, half
@@ -24,7 +26,7 @@ const FACE_CLASS: Record<State, string> = {
   pixel: 'inline-block font-pixel not-italic scale-[0.72]',
   mono: 'inline-block font-mono not-italic scale-[0.8]',
   // The leading edge of the wave: a coral scanline in pixel type.
-  front: 'inline-block font-pixel not-italic scale-[0.72] text-coral',
+  front: 'inline-block font-pixel not-italic scale-[0.72] text-coral-text',
 }
 
 // One loop, in milliseconds. Resting on the serif is the longest phase so the
@@ -81,16 +83,11 @@ export function MorphText({ text }: { text: string }) {
   let baseRef = useRef<HTMLSpanElement>(null)
   let glyphRefs = useRef<Array<HTMLSpanElement | null>>([])
   const [boxes, setBoxes] = useState<Array<Box> | null>(null)
-  let [enabled, setEnabled] = useState(false)
-
-  // Only animate when the visitor has not asked for reduced motion.
-  useEffect(() => {
-    let media = window.matchMedia('(prefers-reduced-motion: reduce)')
-    let update = () => setEnabled(!media.matches)
-    update()
-    media.addEventListener('change', update)
-    return () => media.removeEventListener('change', update)
-  }, [])
+  // Only morph when motion is fully allowed (the OS setting and the site's
+  // Display preferences both agree) and the visitor has not asked for
+  // Readable type, where text must never change shape.
+  let display = useDisplay()
+  let enabled = display.motion === 'full' && !display.readable
 
   // Measure every visible character of the serif sentence, after fonts load
   // and again whenever the card changes size.
@@ -155,9 +152,14 @@ export function MorphText({ text }: { text: string }) {
 
     let pause = () => (paused = true)
     let resume = () => (paused = false)
+    // Focus on the card's own pause button must not hold the morph: that
+    // button is how a keyboard user starts it again.
+    let focusPause = (event: FocusEvent) => {
+      if (!(event.target as Element).closest('button')) paused = true
+    }
     card.addEventListener('pointerenter', pause)
     card.addEventListener('pointerleave', resume)
-    card.addEventListener('focusin', pause)
+    card.addEventListener('focusin', focusPause as EventListener)
     card.addEventListener('focusout', resume)
 
     let observer = new IntersectionObserver(([entry]) => {
@@ -168,7 +170,9 @@ export function MorphText({ text }: { text: string }) {
     let tick = (now: number) => {
       let delta = now - last
       last = now
-      if (visible && !paused && !document.hidden) {
+      // The card's pause button (WCAG 2.2.2) sets data-morph-paused.
+      let stopped = (card as HTMLElement).dataset.morphPaused === 'true'
+      if (visible && !paused && !stopped && !document.hidden) {
         clock = (clock + delta) % CYCLE
         boxes.forEach((box, i) => {
           let state = stateAt(clock, box.index / span)
@@ -187,7 +191,7 @@ export function MorphText({ text }: { text: string }) {
       observer.disconnect()
       card.removeEventListener('pointerenter', pause)
       card.removeEventListener('pointerleave', resume)
-      card.removeEventListener('focusin', pause)
+      card.removeEventListener('focusin', focusPause as EventListener)
       card.removeEventListener('focusout', resume)
     }
   }, [boxes, text])

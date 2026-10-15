@@ -20,6 +20,7 @@ const links = [
   { href: '/articles', label: 'Articles' },
   { href: '/about', label: 'About' },
   { href: '/writing', label: 'Writing' },
+  { href: '/accessibility', label: 'Accessibility' },
   { href: '/portal/sign-in', label: 'Client portal' },
 ]
 
@@ -89,7 +90,7 @@ export function Footer() {
                 key={label}
                 href={href}
                 aria-label={label}
-                className="fill-muted transition hover:fill-coral"
+                className="-m-1.5 fill-muted p-1.5 transition hover:fill-coral"
               >
                 <Icon className="h-5 w-5" />
               </Link>
@@ -100,7 +101,7 @@ export function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="transition hover:text-coral"
+                className="transition hover:text-coral-text"
               >
                 {link.label}
               </Link>
@@ -109,7 +110,7 @@ export function Footer() {
           <div className="flex flex-wrap gap-x-5 gap-y-1">
             <a
               href={`mailto:${contact.email}`}
-              className="text-ink transition hover:text-coral"
+              className="text-ink transition hover:text-coral-text"
             >
               {contact.email}
             </a>

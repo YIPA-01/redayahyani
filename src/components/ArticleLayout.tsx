@@ -24,10 +24,10 @@ function AdjacentArticle({
       href={`/articles/${article.slug}`}
       className="group flex flex-col rounded-2xl border border-zinc-100 p-4 transition hover:border-zinc-200 dark:border-zinc-700/40 dark:hover:border-zinc-700"
     >
-      <span className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+      <span className="text-xs font-medium uppercase tracking-wide text-muted">
         {direction}
       </span>
-      <span className="mt-2 text-sm font-semibold text-zinc-800 transition group-hover:text-accent-500 dark:text-zinc-100">
+      <span className="mt-2 text-sm font-semibold text-zinc-800 transition group-hover:text-coral-text dark:text-zinc-100">
         {article.title}
       </span>
     </Link>
@@ -71,12 +71,14 @@ export async function ArticleLayout({
                   sizes="2rem"
                   className="h-8 w-8 rounded-full bg-zinc-100 object-cover dark:bg-zinc-800"
                 />
-                <div className="flex flex-wrap items-center gap-x-2 text-sm text-zinc-500 dark:text-zinc-400">
+                <div className="flex flex-wrap items-center gap-x-2 text-sm text-muted">
                   <span className="font-medium text-zinc-700 dark:text-zinc-300">
                     {article.author}
                   </span>
                   <span aria-hidden="true">·</span>
-                  <time dateTime={article.date}>{formatDate(article.date)}</time>
+                  <time dateTime={article.date}>
+                    {formatDate(article.date)}
+                  </time>
                   <span aria-hidden="true">·</span>
                   <span>{minutes} min read</span>
                 </div>
