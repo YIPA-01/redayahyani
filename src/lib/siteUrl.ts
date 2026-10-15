@@ -9,7 +9,8 @@ export function absoluteUrl(path: string) {
 }
 
 /**
- * Points at the OG card renderer in src/app/og/route.tsx. Returned relative so
+ * Points at the OG card renderer in src/app/og/route.tsx. With no title it is
+ * the default card (signature, name, role). Returned relative so
  * Next resolves it against metadataBase, which keeps preview deployments from
  * advertising the production origin.
  *
@@ -20,16 +21,18 @@ export function ogImageUrl({
   title,
   eyebrow,
 }: {
-  title: string
+  title?: string
   eyebrow?: string
-}) {
-  const params = new URLSearchParams({ title })
+} = {}) {
+  const params = new URLSearchParams()
+  if (title) params.set('title', title)
   if (eyebrow) params.set('eyebrow', eyebrow)
+  const query = params.toString()
   return {
-    url: `/og?${params.toString()}`,
+    url: query ? `/og?${query}` : '/og',
     width: 1200,
     height: 630,
     type: 'image/png',
-    alt: title,
+    alt: title ?? 'Reda Yahyani, Product engineer',
   }
 }

@@ -5,6 +5,7 @@ import { SimpleLayout } from '@/components/SimpleLayout'
 import { Tags } from '@/components/Tags'
 import { type ArticleWithSlug, getAllArticles } from '@/lib/articles'
 import { formatDate } from '@/lib/formatDate'
+import { ogImageUrl } from '@/lib/siteUrl'
 
 function Article({ article }: { article: ArticleWithSlug }) {
   return (
@@ -41,10 +42,18 @@ function Article({ article }: { article: ArticleWithSlug }) {
   )
 }
 
+const description =
+  'All of my long-form thoughts on programming, leadership, product design, and more, collected in chronological order.'
+
 export const metadata: Metadata = {
   title: 'Articles',
-  description:
-    'All of my long-form thoughts on programming, leadership, product design, and more, collected in chronological order.',
+  description,
+  openGraph: {
+    title: 'Articles',
+    description,
+    type: 'website',
+    images: [ogImageUrl({ title: 'Articles', eyebrow: 'Reda Yahyani' })],
+  },
 }
 
 export default async function ArticlesIndex() {

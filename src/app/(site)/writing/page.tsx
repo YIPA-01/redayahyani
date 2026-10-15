@@ -3,6 +3,7 @@ import { type Metadata } from 'next'
 import { Card } from '@/components/Card'
 import { Section } from '@/components/Section'
 import { SimpleLayout } from '@/components/SimpleLayout'
+import { ogImageUrl } from '@/lib/siteUrl'
 
 function WritingSection({
   children,
@@ -127,9 +128,17 @@ Till Days end .`,
   },
 ]
 
+const description = 'Poetry and other creative writing.'
+
 export const metadata: Metadata = {
   title: 'Writing',
-  description: 'Poetry and other creative writing.',
+  description,
+  openGraph: {
+    title: 'Writing',
+    description,
+    type: 'website',
+    images: [ogImageUrl({ title: 'Writing', eyebrow: 'Reda Yahyani' })],
+  },
 }
 
 export default function Writing() {

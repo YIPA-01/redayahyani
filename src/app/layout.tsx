@@ -10,7 +10,7 @@ import clsx from 'clsx'
 
 import { Providers } from '@/app/providers'
 import { preferencesScript } from '@/lib/a11y/preferences'
-import { siteUrl } from '@/lib/siteUrl'
+import { ogImageUrl, siteUrl } from '@/lib/siteUrl'
 
 import '@/styles/tailwind.css'
 
@@ -76,6 +76,17 @@ export const metadata: Metadata = {
     types: {
       'application/rss+xml': `${siteUrl}/feed.xml`,
     },
+  },
+  // The default share card. Without it, scrapers fall back to the first large
+  // image on the page, which on Home is a project cover.
+  openGraph: {
+    type: 'website',
+    siteName: 'Reda Yahyani',
+    title: 'Reda Yahyani - Product engineer',
+    images: [ogImageUrl()],
+  },
+  twitter: {
+    card: 'summary_large_image',
   },
 }
 

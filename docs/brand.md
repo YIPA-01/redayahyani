@@ -113,7 +113,7 @@ Tokens live in `src/styles/tailwind.css` as RGB channels (light on `:root`, dark
 | `--muted` | `muted` | #69656e | #a5a0ab | Secondary text |
 | `--line` | `line` | #d9d5dc | #34303a | Hairlines and borders |
 | `--coral` | `coral` | #f0543f | #ff6f5a | The one accent: links on hover, emphasis, the hatch fill |
-| `--pink` | `blush` | #f29aa5 | #b8566a | The OG card patches, and the Articles card in the phone menu |
+| `--pink` | `blush` | #f29aa5 | #b8566a | The Articles card in the phone menu |
 
 - The Tailwind name for pink is `blush`, because `pink` would replace Tailwind's own pink scale, which the code highlighting in `src/styles/prism.css` uses.
 - `accent-*` is a static coral scale (50 to 700) that replaced teal in the pages that kept their Spotlight layout. New work should use `coral`.
@@ -127,7 +127,7 @@ The statement card is a drafting surface (`src/components/sections/BlueprintGrid
 - **Shapes:** coral hairlines (1.25px) snapped to the grid, in the top and bottom bands only, never under the text: a circle with its labelled radius, a 90° arc, a square with a corner tick, a crosshair, a triangle, a dimension line labelled with its real length, a rounded rectangle. Labels are DM Mono. Cards narrower than 640px get four corner fragments only.
 - **Cursor:** with a fine pointer, shapes within 220px turn (up to 25°) and lean (up to 6px) toward the pointer, easing like a spring, and a snap guide outlines the cell under the pointer with its column and row. Touch and reduced motion get the static drawing.
 - The card itself is transparent, with a thin coral border.
-- The OG card is a static image, so it keeps soft pink and coral patches instead of the grid.
+- The OG card (`src/app/og/route.tsx`) does not use the grid. It is solid black with the `drawn` signature in white, the name, and "Product engineer". Page cards put their title on top and that lockup at the bottom. The route loads Jost and DM Mono from `src/fonts/` because `next/font` does not reach `ImageResponse`.
 
 ### Motion
 

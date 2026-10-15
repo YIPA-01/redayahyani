@@ -7,6 +7,7 @@ import { Container } from '@/components/Container'
 import { RoleSplit } from '@/components/sections/RoleSplit'
 import { GitHubIcon, LinkedInIcon, XIcon } from '@/components/SocialIcons'
 import portraitImage from '@/images/portrait.jpg'
+import { ogImageUrl } from '@/lib/siteUrl'
 
 function SocialLink({
   className,
@@ -43,10 +44,18 @@ function MailIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   )
 }
 
+const description =
+  'I’m Reda Yahyani, a product engineer in Agadir, Morocco. I design and build web products end to end, starting from the people who use them.'
+
 export const metadata: Metadata = {
   title: 'About',
-  description:
-    'I’m Reda Yahyani, a product engineer in Agadir, Morocco. I design and build web products end to end, starting from the people who use them.',
+  description,
+  openGraph: {
+    title: 'About',
+    description,
+    type: 'website',
+    images: [ogImageUrl({ title: 'About', eyebrow: 'Reda Yahyani' })],
+  },
 }
 
 export default function About() {
