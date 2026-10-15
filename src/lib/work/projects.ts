@@ -7,6 +7,7 @@ import logoPath90 from '@/images/logos/path90.png'
 import logoRoomee from '@/images/logos/roomee.png'
 import coverAutoAiConnect from '@/images/work/autoaiconnect/cover.jpg'
 import coverPath90 from '@/images/work/path90/cover.jpg'
+import coverRoomee from '@/images/work/roomee/cover.jpg'
 
 export interface WorkProject {
   // Drives /work/<slug>. Must match the case study directory name when
@@ -23,6 +24,10 @@ export interface WorkProject {
   // CoverImage component draws a slug-seeded placeholder until a real file
   // lands at src/images/work/<slug>/cover.jpg and gets imported here.
   cover?: ImageProps['src']
+  // Optional moving cover for the case study hero only: a muted walkthrough
+  // in public/work/<slug>/. Cards keep using `cover`, which is also the
+  // fallback.
+  coverVideo?: { src: string; poster: string }
   link?: { href: string; label: string }
   logo?: ImageProps['src']
   builtWith?: { name: string; logo: ImageProps['src'] }
@@ -36,12 +41,17 @@ export const workProjects: Array<WorkProject> = [
     slug: 'roomee',
     name: 'Roomee',
     role: 'Personal project',
+    // TODO: confirm the start year; the current version's history starts March 2026.
     year: '2024 to present',
     description:
-      'A rental marketplace for students and young professionals in Morocco. I build it end to end: listing ingestion, search, and the matching that pairs renters with places they can actually afford.',
-    tagline: 'Rooms that students can actually afford',
-    // TODO: confirm stack
-    stack: ['Next.js', 'TypeScript', 'PostgreSQL', 'Supabase'],
+      'Students and young professionals in Morocco find a room, a landlord they can trust, or a flatmate who fits. I designed and built it end to end: search and maps, compatibility matching, requests, visits, and realtime chat, in French, Arabic, and English.',
+    tagline: 'A room, or a flatmate, you can trust',
+    stack: ['Next.js', 'TypeScript', 'Laravel', 'MySQL'],
+    cover: coverRoomee,
+    coverVideo: {
+      src: '/work/roomee/overview.mp4',
+      poster: '/work/roomee/overview-poster.jpg',
+    },
     link: { href: 'https://roomee.ma', label: 'roomee.ma' },
     logo: logoRoomee,
     caseStudy: true,

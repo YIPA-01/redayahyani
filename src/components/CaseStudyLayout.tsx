@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import Link from 'next/link'
 
 import { BackButton } from '@/components/BackButton'
@@ -8,6 +9,7 @@ import {
   TableOfContentsRail,
 } from '@/components/case-study/TableOfContents'
 import { CoverImage } from '@/components/work/CoverImage'
+import { CoverVideo } from '@/components/work/CoverVideo'
 import { getWorkProject } from '@/lib/work/projects'
 
 function LinkIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
@@ -77,12 +79,27 @@ export function CaseStudyLayout({
               </p>
             </header>
 
-            <div className="mt-10 aspect-[16/10] w-full overflow-hidden rounded-2xl bg-zinc-100 ring-1 ring-zinc-900/5 dark:bg-zinc-800 dark:ring-white/10">
-              <CoverImage
-                project={project}
-                priority
-                sizes="(min-width: 640px) 42rem, 100vw"
-              />
+            <div
+              className={clsx(
+                'mt-10 w-full overflow-hidden rounded-2xl bg-zinc-100 ring-1 ring-zinc-900/5 dark:bg-zinc-800 dark:ring-white/10',
+                // A walkthrough keeps its own screen shape instead of being
+                // cropped to the 16:10 still cover.
+                project.coverVideo ? 'aspect-video' : 'aspect-[16/10]',
+              )}
+            >
+              {project.coverVideo ? (
+                <CoverVideo
+                  src={project.coverVideo.src}
+                  poster={project.coverVideo.poster}
+                  label={`A walkthrough of ${project.name}`}
+                />
+              ) : (
+                <CoverImage
+                  project={project}
+                  priority
+                  sizes="(min-width: 640px) 42rem, 100vw"
+                />
+              )}
             </div>
 
             <dl className="mt-10 grid grid-cols-2 gap-6 border-y border-zinc-100 py-6 sm:grid-cols-3 dark:border-zinc-700/40">

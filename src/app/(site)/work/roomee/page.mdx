@@ -1,40 +1,704 @@
 import { CaseStudyLayout } from '@/components/CaseStudyLayout'
+import {
+  Comparison,
+  Decision,
+  FactList,
+  Figure,
+  Goal,
+  Overview,
+  OverviewRow,
+  PainPoints,
+  Requirements,
+  Traceability,
+} from '@/components/case-study'
 import { caseStudyMetadata } from '@/lib/work/metadata'
+import landingAr from '@/images/work/roomee/landing-ar.jpg'
+import landingFr from '@/images/work/roomee/landing-fr.jpg'
+import roomeeBrowse from '@/images/work/roomee/browse.jpg'
+import roomeeCity from '@/images/work/roomee/city.jpg'
+import roomeeFilters from '@/images/work/roomee/filters.jpg'
+import roomeeFlatmates from '@/images/work/roomee/flatmates.jpg'
+import roomeeListing from '@/images/work/roomee/listing.jpg'
+import airbnbBrowse from '@/images/work/roomee/refs/airbnb-browse.jpg'
+import airbnbFilters from '@/images/work/roomee/refs/airbnb-filters.jpg'
+import airbnbListing from '@/images/work/roomee/refs/airbnb-listing.jpg'
+import colivingCommunities from '@/images/work/roomee/refs/coliving-communities.jpg'
+
+import { Architecture } from './diagrams/Architecture'
+import { BookingLifecycle } from './diagrams/BookingLifecycle'
+import { DomainModel } from './diagrams/DomainModel'
+import { MatchRanking } from './diagrams/MatchRanking'
+import { RequestToContract } from './diagrams/RequestToContract'
+import { UseCases } from './diagrams/UseCases'
 
 export const metadata = caseStudyMetadata('roomee')
 
 export default (props) => <CaseStudyLayout slug="roomee" {...props} />
 
-{/* The facts below come from src/lib/work/projects.ts. Everything marked TODO
-    needs numbers or specifics only Reda has. Placeholder prose is deliberately
-    absent rather than invented. */}
+{/* Structure: docs/case-study.md, full seven sections (my own product).
+    Every claim comes from the ~/roomee_v2 repo or docs/PRODUCT.md and
+    docs/PERFORMANCE.md inside it. TODO comments mark what only Reda can
+    supply; do not replace them with invented prose. */}
 
-## The problem
+## Overview
 
-Finding a room in Morocco as a student runs on WhatsApp groups, Facebook posts, and word of mouth. Listings are duplicated across a dozen places, most are stale, and the ones that are real are often priced for people with a salary. The search that matters is not "show me apartments in this city", it is "show me the places I can actually afford, near where I study, that are still available".
+<Overview>
+  <OverviewRow label="The product">
+    A place to rent in Morocco for students and young professionals: a room, a
+    flat, or a spot in a flatshare, with a landlord or a flatmate you can trust.
+    Tenants search on a map and see how well each place and each potential
+    flatmate fits them. Landlords publish in two steps and review applicants
+    ranked by fit. Everything after the first message, from visit to signed
+    contract, happens in one conversation. It runs in French, Arabic, and
+    English.
+  </OverviewRow>
+  <OverviewRow label="The problem">
+    Finding a room in Casablanca or Rabat means scrolling Facebook groups and
+    classified sites, where the same posts repeat, nobody says who is behind
+    them, and agencies charge a fee for an introduction. For a flatshare it is
+    worse: the room matters less than who you will live with, and a classified
+    ad says nothing about that.
+  </OverviewRow>
+  <OverviewRow label="The goal">
+    <Goal>
+      A tenant finds a room with a landlord they trust, or a flatmate who fits,
+      in the same session they started looking.
+    </Goal>
+  </OverviewRow>
+  <OverviewRow label="Duration">
+    The current version since March 2026, live at roomee.ma and still shipping.
+    {/* TODO: when the first version started, if it is part of the story. */}
+  </OverviewRow>
+  <OverviewRow label="My role">
+    Founder. I designed and built it end to end.
+  </OverviewRow>
+  <OverviewRow label="Responsibilities">
+    <ul>
+      <li>Talking to students and testing builds with people</li>
+      <li>Product principles, flows, and the visual system</li>
+      <li>The web app in three languages, with right-to-left Arabic</li>
+      <li>The API, data model, and compatibility matching</li>
+      <li>Realtime chat, notifications, and the admin console</li>
+      <li>Hosting, performance, and deploys</li>
+    </ul>
+  </OverviewRow>
+  <OverviewRow label="Team">
+    Just me.
+    {/* TODO: anyone who helped (testers, translators), by role. */}
+  </OverviewRow>
+</Overview>
 
-## What I built
+## Business requirements
 
-I lead engineering on Roomee. Three pieces carry most of the weight:
+Roomee has three kinds of user on one platform, and each has to get something from it, or the other two leave.
 
-**Listing ingestion.** Supply arrives from scattered, inconsistent sources. Ingestion normalizes it into one shape and collapses duplicates, so a single flat posted in four places appears once.
+<FactList
+  groups={[
+    {
+      title: 'Goals',
+      items: [
+        'Be the first place a student in a Moroccan city looks for a room or a flatmate.',
+        'Make publishing easy enough that private landlords bring quality listings.',
+        'Earn trust in a market used to classifieds and Facebook groups.',
+        'Stay free for tenants, with no agency fees for anyone.',
+      ],
+    },
+    {
+      title: 'Stakeholders',
+      items: [
+        'Tenants: students, who care most about price and community, and young professionals, who care about trust and speed.',
+        'Landlords: private individuals, not agencies, careful about who they rent to.',
+        'Flatmates: tenants looking for each other, or hosting a room in their own flat.',
+        'Me, as the operator who moderates the platform.',
+      ],
+    },
+  ]}
+/>
 
-**Search.** Filtering on price, location, and availability, tuned for the query a renter actually has rather than the fields a database happens to store.
+What I measure, from the admin console's analytics:
 
-**Matching.** Pairing renters with places within their budget and their commute, which is the part that turns a listing directory into something worth coming back to.
+| Measure | Why it matters |
+| --- | --- |
+| Time to first request | The goal in one number: how fast a new tenant reaches a landlord |
+| Landlord response time | A request nobody answers is worse than no request |
+| Retention, by weekly cohort | Whether people come back while they are still searching |
+| Activity by city | Where supply and demand are, and where they do not meet |
 
-{/* TODO: pick the one hard technical problem worth 3 paragraphs. Candidates:
-    deduplication across sources, ranking, or the ingestion pipeline. */}
+{/* TODO: current values and targets for each measure. */}
 
-## What it took
+<FactList
+  groups={[
+    {
+      title: 'Constraints',
+      items: [
+        'French, Arabic, and English, with a real right-to-left layout in Arabic.',
+        'Mobile first: most people search on a phone.',
+        'Thin inventory early on, so nothing useful can be filtered out of sight.',
+        'One person building and running it, on a small budget.',
+      ],
+    },
+    {
+      title: 'Scope',
+      items: [
+        'In: search and map, matching, requests, chat, visits and contract, the admin console, city pages for search engines.',
+        'Next, in a written backlog: marking a listing rented, paid promotion, per-listing analytics, and a revenue view for landlords.',
+      ],
+    },
+  ]}
+/>
 
-{/* TODO: the constraint that shaped the architecture. Scale? Data quality?
-    Team size? Latency budget? Write the tradeoff you actually made and the
-    option you rejected. */}
+<Requirements
+  items={[
+    {
+      id: 'R1',
+      text: 'Tenants search by city, area, rent, and room details, on a list and on a map.',
+    },
+    {
+      id: 'R2',
+      text: 'Tenants and landlords see how well a place or a person fits, and why.',
+    },
+    {
+      id: 'R3',
+      text: 'A landlord publishes a listing in two steps: details, then photos.',
+    },
+    {
+      id: 'R4',
+      text: 'A conversation opens only when the landlord accepts a request.',
+    },
+    {
+      id: 'R5',
+      text: 'Visits and the rental contract are arranged inside the conversation.',
+    },
+    {
+      id: 'R6',
+      text: 'French, Arabic, and English, with Arabic fully right to left.',
+    },
+    {
+      id: 'R7',
+      text: 'Mobile first and accessible: 44px targets, reduced motion respected.',
+    },
+    {
+      id: 'R8',
+      text: 'I can moderate people, listings, and suspicious messages.',
+    },
+    {
+      id: 'R9',
+      text: 'Each city has a flatshare page that search engines can find.',
+    },
+  ]}
+/>
 
-## Where it stands
+{/* TODO: priorities (must, should, could) for each requirement. */}
 
-Roomee is live at [roomee.ma](https://roomee.ma).
+## Understanding the user
 
-{/* TODO: outcome. Listings ingested, active users, cities covered, whatever
-    number is both true and shareable. */}
+I talked to students looking for rooms and put early builds in front of people to test them.
+
+{/* TODO: who you talked to and how many, what you assumed going in, and
+    what changed after. Two short paragraphs. */}
+
+I wrote down what I learned as five principles that every screen has to pass:
+
+1. **People before properties.** Show the person behind a listing before its specs and price. Renting is a trust decision first.
+2. **Friction is a landlord problem too.** A hard listing flow means fewer good listings for everyone.
+3. **The social layer is a feature.** Finding a flatmate is its own surface, not a tab inside the tenant dashboard.
+4. **Right to left is not an afterthought.** Every design is checked in both directions before it ships.
+5. **Mobile first means mobile native.** Browsing, messaging, and requests are built for a thumb on a small screen.
+
+<PainPoints
+  items={[
+    {
+      title: 'Facebook group chaos',
+      guide:
+        'One place with structured listings, filters, and a map, instead of scrolling the same posts in five groups.',
+      refs: 'R1, R9',
+    },
+    {
+      title: 'Agency fees for an introduction',
+      guide:
+        'Landlords list for free and tenants reach them directly, through a request the landlord can accept.',
+      refs: 'R3, R4',
+    },
+    {
+      title: 'Not knowing who is on the other side',
+      guide:
+        'Profiles come before listings, and nobody can message a landlord out of nowhere.',
+      refs: 'R4, R8',
+    },
+    {
+      title: 'A room is easy, a flatmate is hard',
+      guide:
+        'Match people on how they live (schedule, guests, smoking, pets), not only on budget and city.',
+      refs: 'R2',
+    },
+  ]}
+/>
+
+{/* TODO: confirm these four against your conversations, and add a real
+    quote to each (the `quote` field). Then add personas and a journey map.
+    Persona template, once the component exists:
+    <Persona
+      name="" age={} context=""
+      quote=""
+      goals={[]} frustrations={[]}
+      statement="[Name] is a [characteristics] who needs [need] because [insight]."
+    /> */}
+
+## Designing
+
+The visual system started from the design system of Clay, which I studied as a reference: a warm off-white canvas, oat borders, and named colors. I kept its structure and made it Roomee's: a deep matcha green for trust, a warm lemon for accents, and Creato Display as the face. In Arabic, Cairo replaces it, because a Latin display face set in Arabic script falls back to whatever the device has.
+
+<Figure
+  src={landingFr}
+  alt="The Roomee landing page in French: the headline “Colocation, chambres et studios, entre gens de confiance”, tabs for tenant, flatshare, and landlord, three promises (free for tenants, no more Facebook group chaos, no agency fees), and a button to find a home."
+  caption="The landing page in French, the primary market. The three tabs speak to a tenant, a flatshare seeker, and a landlord before anyone signs up."
+/>
+
+### References
+
+Two products shaped the app more than any other. Airbnb sets what people expect from searching for a place to stay: a list next to a map, a filter that shows where prices fall, and a listing page that puts the host next to the price. Coliving.com treats shared living as a product of its own, organized around who you will live with rather than the room. Roomee takes from both, and changes what does not fit renting in Morocco.
+
+<Comparison
+  title="Search: a list of places, with the map beside it"
+  reference={{
+    src: airbnbBrowse,
+    alt: 'Airbnb search results for Casablanca: listing cards with a photo carousel, a badge, the neighbourhood, rooms, dates, and the total price.',
+    label: 'Reference: Airbnb, search results',
+  }}
+  ours={{
+    src: roomeeBrowse,
+    alt: 'Roomee browse page in French: a where field, tabs for all, rentals, and flatshares, a filters button, listing cards with type, area, rooms, and monthly rent in MAD, and a map of Casablanca beside them.',
+    label: 'Roomee, browse',
+  }}
+  kept="Cards with the photo first, the area and room count under the title, a save heart, and the map beside the list, which redraws as you move it."
+  changed="The price is monthly rent in MAD with charges marked included or excluded, not a nightly total. One switch at the top separates whole rentals from flatshares. Pins on the map sit 120 to 250 m from the real address, so a listing never gives away a door."
+/>
+
+<Comparison
+  title="Filters: show where prices fall"
+  reference={{
+    src: airbnbFilters,
+    alt: 'Airbnb filters dialog: type of place, a price range with a histogram of listings and two handles, and counters for bedrooms, beds, and bathrooms.',
+    label: 'Reference: Airbnb, filters',
+  }}
+  ours={{
+    src: roomeeFilters,
+    alt: 'Roomee filters dialog in French: listing type (all, rental, flatshare), a monthly rent range in MAD with a histogram, and counters for bedrooms and bathrooms.',
+    label: 'Roomee, filters',
+  }}
+  kept="The dialog layout, and the histogram above the price range, so a tenant sees where most rooms sit before dragging a handle."
+  changed="The histogram counts monthly rent in 500 MAD steps up to 20,000. Type of place becomes rental or flatshare, and the dialog adds property type, furnished, and amenities."
+/>
+
+<Comparison
+  title="Listing: the person next to the price"
+  reference={{
+    src: airbnbListing,
+    alt: 'Airbnb listing page: a five-photo gallery, the unit summary and rating, the host row (blurred here), and a booking box with dates and guests.',
+    label: 'Reference: Airbnb, listing (host blurred)',
+  }}
+  ours={{
+    src: roomeeListing,
+    alt: 'Roomee listing page in French: a large photo with thumbnails, and beside it the lister card (blurred here) above the monthly rent, the deposit, and a button to sign up to contact.',
+    label: 'Roomee, listing (lister blurred)',
+  }}
+  kept="A large gallery on the left and a sticky column on the right that holds the decision."
+  changed="The lister card sits at the top of that column, above the price, because renting is a trust decision first (principle 1). There is no booking: the button sends a request, and a guest is asked to sign up first."
+/>
+
+<Comparison
+  title="Flatshares: built around people"
+  reference={{
+    src: colivingCommunities,
+    alt: 'Coliving.com communities page: the title Coliving Communities, shortcuts for young professionals, digital nomads, remote workers, and students, and community cards with a photo and a count of colivings.',
+    label: 'Reference: Coliving.com, communities',
+  }}
+  ours={{
+    src: roomeeFlatmates,
+    alt: 'Roomee flatmate directory in French: a where field and filters, a count of 211 seekers, and cards with a photo and name (blurred here), occupation, budget range in MAD, city, move-in date, and a message button.',
+    label: 'Roomee, flatmate directory (people blurred)',
+  }}
+  kept="Shared living as its own surface, organized by who you will live with, with students and young professionals as the main audiences."
+  changed="Coliving.com lists operators’ buildings; in Roomee, a flatshare is hosted by a tenant in their own flat. So the directory lists people, not buildings: budget, city, and move-in date on the card, with lifestyle behind sign-in, and ranked by match for anyone signed in (D2, D3)."
+/>
+
+<Figure
+  src={roomeeCity}
+  alt="Roomee city page in French: Colocation à Casablanca, rooms from 1,000 MAD a month, two paragraphs on where flatshares are in the city, and flatshare cards."
+  caption="A flatshare page for each city, written for people searching “colocation Casablanca”: where flatshares are, what they cost, and the rooms available now (R9)."
+/>
+
+{/* TODO: confirm in your own words what you took from Airbnb and
+    Coliving.com, and add the map views (the map did not render in the
+    capture session). Reference shots were taken in October 2026. */}
+
+### Iterations
+
+
+The design went through rounds I can point to:
+
+- **Onboarding.** I mocked up a 3D onboarding before building it: a profile card that fills in as you type, a room that reacts to your lifestyle answers, and your city in miniature. All three shipped as animated scenes.
+- **The landing page.** Redesigned twice in March, the second time around a centered hero and a strip of numbers. The current version leads with the three audiences.
+- **The persona quiz.** A quiz on the landing page asked about budget and field of study. I removed it in August.
+- **The match breakdown.** A detailed per-factor view of each match score. I removed it in September for a simpler badge.
+
+{/* TODO: why the quiz and the match breakdown went (what testing or
+    conversations showed). Add screens of browse, a listing, and the
+    flatmate directory from demo data, never from real users' listings. */}
+
+## Refining
+
+{/* TODO: testing rounds, once the StudyRound component exists. For each:
+    how many people, how, and two or three findings with counts, then
+    the before and after for the change each one caused. */}
+
+Arabic is the second language of the product and gets the same layout, mirrored, not a translated copy of the French page:
+
+<Figure
+  src={landingAr}
+  alt="The same Roomee landing page in Arabic, mirrored right to left: the navigation, headline, tabs, and button sit on the right, and the photo on the left."
+  caption="The same page in Arabic. Everything mirrors, the Arabic face takes over, and map labels render in Arabic script through the map's right-to-left text plugin."
+/>
+
+Accessibility work that is in the code today:
+
+- Touch targets of at least 44px on phones.
+- The onboarding scenes and landing animations respect reduced motion.
+- Direction set on the document per language, with logical spacing so layouts mirror without a second stylesheet.
+
+{/* TODO: a contrast check across the palette; none is recorded yet. */}
+
+## Engineering
+
+The product promises three things the code has to keep: a match score that means something even when profiles are half filled in, contact that only happens when the landlord says yes, and a site that loads fast on a phone in Morocco.
+
+### Conception
+
+<UseCases />
+
+The domain model separates the person from their preferences. The profile carries everything the compatibility scorer reads, so matching never touches the account itself.
+
+<DomainModel />
+
+A rental is a sequence of commitments, so the states are explicit and every arrow belongs to one method:
+
+<BookingLifecycle />
+
+<RequestToContract />
+
+### Implementation
+
+<Architecture />
+
+#### Key decisions
+
+<Decision
+  id="D1"
+  refs="R4, R8"
+  title="A request before a conversation"
+  context="Private landlords are careful about who they rent to, and an open inbox fills with messages nobody wanted. Tenants still need a fast way to show interest."
+  options={[
+    {
+      name: 'Open messaging',
+      note: 'Fast for tenants, and it turns a landlord’s inbox into the Facebook group the product exists to replace.',
+    },
+    {
+      name: 'Block suspicious messages automatically',
+      note: 'Catches some scams, and also blocks people sharing a phone number for a good reason, with no way to tell them apart.',
+    },
+    {
+      name: 'Request, accept, then chat; flag, never block',
+      note: 'One request per listing. The chat opens when the landlord accepts. A scanner flags phone numbers, links, and payment terms for me to review, in all three languages.',
+      chosen: true,
+    },
+  ]}
+  consequences="A landlord who writes to someone first, from the flatmate directory, already has a thread; accepting that person’s request later adopts it instead of opening a second one. Flags never edit or hold a message, so a false positive costs nothing but my time."
+/>
+
+<Decision
+  id="D2"
+  refs="R2"
+  title="A score that knows what it does not know"
+  context="Most profiles are half empty. The first version of matching ran in the browser and scored a missing answer as zero, so “we don’t know” looked exactly like “bad fit”."
+  options={[
+    {
+      name: 'One flat average over every factor',
+      note: 'Simple, and adding a fourth lifestyle question would quietly dilute budget, the most decisive signal.',
+    },
+    {
+      name: 'Hard filters for dealbreakers',
+      note: 'Clear, and with thin inventory it empties the page.',
+    },
+    {
+      name: 'Grouped means, renormalised, with dampeners',
+      note: 'Factors average within their group, groups combine by weight, and missing answers drop out of both sides of the fraction. Dealbreakers multiply the score down instead of removing the row.',
+      chosen: true,
+    },
+  ]}
+  consequences="What is missing is reported as a confidence value instead of hidden in the score. Nothing disappears from a list: it sinks, and the badge says why. Every weight lives in one config file that both the SQL and the PHP read."
+/>
+
+<Decision
+  id="D3"
+  refs="R2"
+  title="Rank in two stages"
+  context="Ranking flatmates means scoring every candidate against the viewer, and the exact score cannot be written as an indexed SQL expression."
+  options={[
+    {
+      name: 'A table of precomputed scores',
+      note: 'One row per pair of people, a full recompute on every weight change, and a stale row on every profile edit.',
+    },
+    {
+      name: 'Score everything in PHP',
+      note: 'Exact, and the cost grows with every new user.',
+    },
+    {
+      name: 'SQL narrows, PHP scores',
+      note: 'Indexed filters and a coarse ordering in SQL pick 300 candidates; the exact scorer ranks those.',
+      chosen: true,
+    },
+  ]}
+  consequences="Cost follows the window, not the size of the platform. The price is that a candidate outside the window can never surface, so the coarse ordering is built from the same weights to make that unlikely. The ranked list is cached for five minutes under a key that includes the viewer’s last profile edit, so there is nothing to invalidate."
+/>
+
+<Decision
+  id="D4"
+  refs="R1, R2"
+  title="Flatshares are visible by gender"
+  context="A flatshare is someone’s home. Tenants looking for a flatshare see rooms hosted by people of their own gender; rentals of a whole place are not affected."
+  options={[
+    {
+      name: 'Let the score handle it',
+      note: 'Gender is already a dealbreaker that halves a score. For a shared home, a low score still shows the room, and visibility is the issue.',
+    },
+    {
+      name: 'An optional filter',
+      note: 'Puts the burden on every tenant to set it, and on every host to hope they did.',
+    },
+    {
+      name: 'Enforced in the database query',
+      note: 'A scope on every listing query, so a flatshare outside the rule never leaves the server.',
+      chosen: true,
+    },
+  ]}
+  consequences="The same rule guards conversations: a host cannot message a seeker about a flatshare the seeker could not see. Guests and landlords see every listing, so the rule shapes tenant search without hiding inventory from anyone browsing."
+/>
+
+{/* TODO: D4 in your own words, especially why. */}
+
+<Decision
+  id="D5"
+  refs="R4, R8"
+  title="Session cookies, not tokens"
+  context="The web app and the API live on different hosts, and the admin console needs a stronger session than a tenant does."
+  options={[
+    {
+      name: 'Bearer tokens in the browser',
+      note: 'Easy to call from anywhere, and a token in browser storage is readable by any script that runs on the page.',
+    },
+    {
+      name: 'Session cookies through Sanctum',
+      note: 'HttpOnly cookies with CSRF protection; the client fetches a fresh CSRF token and retries once when it goes stale.',
+      chosen: true,
+    },
+  ]}
+  consequences="The admin console runs on its own origin with its own session cookie and CSRF token, two-factor sign-in, a 30-minute idle timeout, and an append-only audit log. Moderation hides content or suspends accounts; it never deletes."
+/>
+
+#### Physical data model
+
+Every weight and tolerance sits in one config file. The SQL pre-ordering and the PHP scorer both read it, so a weight exists in exactly one place:
+
+```php
+'listing' => [
+    'groups' => [
+        'host_fit' => 35,    // does the person fit what the listing asks for?
+        'seeker_fit' => 45,  // does the listing fit what the person asked for?
+        'lifestyle' => 20,   // only for shared homes
+    ],
+    // ...factors: gender, age, smoking, pets, budget, city, move_in, area...
+],
+'dealbreakers' => [
+    'gender' => 0.50,
+    'smoking' => 0.70,
+    'pets' => 0.80,
+],
+'tolerance' => [
+    'budget_stretch' => 0.25,  // 25% over budget scores zero
+    'move_in_days' => 45,
+    'age_years' => 10,
+],
+```
+
+#### Deep dive: the compatibility score
+
+<MatchRanking />
+
+The scorer is pure: it takes loaded models and runs no queries, which is what lets each row in a list call it without extra database work, and what lets the unit tests cover the real logic without a database.
+
+Each factor returns a value between 0 and 1, or nothing when either side left it blank. Budget, for example, is a clean 1 under budget, because cheaper than asked is not a mismatch, and falls to zero at 25% over. The fold that turns factors into a score:
+
+```php
+foreach ($applicable as $group => $groupWeight) {
+    $share = $groupWeight / $groupTotal;
+
+    if (($total[$group] ?? 0) > 0) {
+        $confidence += $share * (($seen[$group] ?? 0) / $total[$group]);
+    }
+
+    if (($seen[$group] ?? 0) > 0) {
+        $scoreNum += $groupWeight * ($sum[$group] / $seen[$group]);
+        $scoreDen += $groupWeight;
+    }
+}
+
+$score = ($scoreNum / $scoreDen) * $this->dealbreakerDampener($values);
+```
+
+Within a group, the mean is taken only over factors that had data (`$seen`), and a group with no data drops out of the denominator. Confidence is the share of each group's weight that was actually evaluated. A dealbreaker dampens only when it was answered and failed: nobody is punished for a question the other side left blank. Roommate scoring is tested for symmetry, so two people always see the same score for each other.
+
+#### Deep dive: making it fast
+
+Performance went through three measured rounds, each written up with what was slow, what changed, and what was tried and reverted.
+
+| Round | What was slow | What changed |
+| --- | --- | --- |
+| 1. The API | Production ran PHP's development server: one request at a time, with OPcache off, so Laravel recompiled on every request. 31 of 34 pages were client rendered, and the app layouts showed a blank screen until the session loaded. | FrankenPHP with OPcache and framework caches built at boot; skeleton layouts; composite indexes for the list queries. Public assets went from 30 MB to 7.0 MB. |
+| 2. The landing page | Time to first byte 2.551 s, largest paint 5.463 s, 4 MB over 88 requests. The hero video downloaded inside the largest-paint window, and the frontend was served from the US to an audience in Morocco. | Locale routes prerendered; Vercel region moved from Washington to Paris; hero video deferred until after load; 67 KB of signed-in-only CSS split out. Hero assets went from 4,170 KB to 1,671 KB. |
+| 3. Mobile | PageSpeed 60, and layout shift of 0.129, two regressions from round 2. | A lazily loaded menu inside the tab bar went back to a static import; fallback fonts matched to the brand face's metrics; the hero poster through the image optimiser, from 26,580 B to 8,897 B. Landing CSS went from 44.7 KiB to 34.4 KiB gzipped. |
+
+{/* TODO: the after numbers for rounds 2 and 3 (TTFB, LCP, PageSpeed), if
+    you measured them. */}
+
+Two decisions went the other way on evidence. The React Compiler grew the client bundle from 744 KB to 843 KB gzipped, and this app's bottleneck is loading, not re-rendering, so I turned it off. Redis for the cache was first skipped, because nothing called the cache, then adopted once the ranked match list started caching on the request path, where a database-backed cache would have cancelled most of what two-stage ranking saves.
+
+#### Quality attributes
+
+<FactList
+  groups={[
+    {
+      title: 'Privacy',
+      items: [
+        'Public map pins sit 120 to 250 m from the real address, and the offset is fixed per listing, so reloading the page cannot average it back to the door.',
+        'Owners see their exact pin; everyone else sees the approximate one.',
+      ],
+    },
+    {
+      title: 'Security',
+      items: [
+        'Session cookies with CSRF protection; rate limits on sign-in, email codes, reports, and feedback.',
+        'Email verification before anyone can publish or request.',
+        'An admin console on its own origin, with 2FA and an audit log.',
+      ],
+    },
+    {
+      title: 'Languages',
+      items: [
+        'Locale routes in French, Arabic, and English; French is the default.',
+        'Queued emails go out in the recipient’s language, not the sender’s.',
+        'Arabic map labels, Arabic font, and mirrored layout.',
+      ],
+    },
+    {
+      title: 'Known gaps',
+      items: [
+        'No continuous integration: the tests run on my machine.',
+        'No frontend tests.',
+        'The project notes and schema file lag behind the code.',
+        'The Arabic copy still needs a native speaker’s review.',
+      ],
+    },
+  ]}
+/>
+
+#### Testing and delivery
+
+The backend has 256 tests across 39 files: authentication, Google sign-in, email verification, matching and ranking, the gender rule, browse filters, requests and their cancellation, bookings, reports, notifications, and the admin console. The frontend has none, and nothing runs them automatically yet.
+
+The web app deploys on Vercel; the API, the queue worker, and the websocket server deploy on Railway from their own configs. In July, iCloud corrupted the working copy: it evicted files and destroyed the repository's history. I rebuilt it from the newest remote branch with the local files laid over it, wrote down the files that could not be recovered, and recreated them one by one as the code needed them.
+
+#### Traceability
+
+<Traceability
+  rows={[
+    {
+      req: 'R1',
+      design: 'List and map, filters, price histogram',
+      implementation: 'Filtered queries, bounding-box map search, 300 pins',
+      verified: 'Browse filter tests',
+    },
+    {
+      req: 'R2',
+      design: 'Match badge on listings and flatmates',
+      implementation: 'D2, D3: renormalised scorer, two-stage ranking',
+      verified: 'Unit tests, including symmetry; ranking tests',
+    },
+    {
+      req: 'R3',
+      design: 'Two steps: details, then photos',
+      implementation: 'Draft stays private until photos are added',
+      verified: 'Listing status and image tests',
+    },
+    {
+      req: 'R4',
+      design: 'Request button, chat after acceptance',
+      implementation: 'D1: one request per listing, chat on accept',
+      verified: 'Request and cancellation tests',
+    },
+    {
+      req: 'R5',
+      design: 'Booking cards in the chat',
+      implementation: 'Slots, visit, contract PDF, both signatures',
+      verified: 'Booking tests',
+    },
+    {
+      req: 'R6',
+      design: 'Mirrored Arabic layout and font',
+      implementation: 'Locale routes, direction per document, RTL map text',
+      verified: 'Manual check in all three languages',
+    },
+    {
+      req: 'R7',
+      design: '44px targets, reduced motion',
+      implementation: 'Global styles, motion guarded per animation',
+      verified: 'Manual check',
+    },
+    {
+      req: 'R8',
+      design: 'Reports, flags, admin console',
+      implementation: 'Message scanner, audit log, hide not delete',
+      verified: 'Report and admin tests',
+    },
+    {
+      req: 'R9',
+      design: 'A flatshare page per city',
+      implementation: 'Prerendered city pages, sitemap, structured data',
+      verified: 'Sitemap tests',
+    },
+  ]}
+/>
+
+## Outcome
+
+Roomee is live at [roomee.ma](https://roomee.ma) in Casablanca, Rabat, Marrakech, and Tangier, in three languages.
+
+{/* TODO: impact against the measures in Business requirements: time to
+    first request, landlord response time, retention, activity by city,
+    and the number of listings and people on the platform. A quote from a
+    tenant or a landlord if you have one. */}
+
+### Retrospective
+
+Matching taught me to separate what the data says from what it does not. The first version treated a blank answer as a bad one, and a half-filled profile looked like a poor fit to everyone. Reporting confidence next to the score made the numbers honest, and made the empty fields worth filling.
+
+Performance taught me to measure before deciding. Two of my first instincts, the React Compiler and skipping Redis, were wrong in opposite directions, and only the numbers said so.
+
+{/* TODO: rewrite both paragraphs in your own words; they are a first draft
+    from the code and the performance notes. Add what the conversations
+    with students taught you. */}
+
+### Next steps
+
+1. **Run the tests on every push.** 256 backend tests that only run on my machine protect less than they should, and the frontend needs its own.
+2. **Close the loop on listings.** Marking a listing rented and per-listing analytics are the top of the backlog, because landlords ask what happened after they published.
+3. **Arabic by a native speaker.** The second language of the product deserves the same care in its copy as in its layout.

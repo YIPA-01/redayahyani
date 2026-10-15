@@ -2,7 +2,7 @@
 
 **Status: settled. Path90 is the first real case study; the components it needed are built, the rest are planned.** This is the reference for every case study at `/work/<slug>`. It merges the Google UX Design Certificate case study deck with business requirements and a full engineering section, because the positioning in `docs/brand.md` is product engineer, UX-led: the design process and the engineering both have to be visible, and each has to trace back to the user.
 
-The worked example is the fictional Roomee test page (private artifact, https://claude.ai/artifact/QDHhVxDHg818Wmy13swQT5). Its structure is the reference; its content is invented and must never be copied into a real case study.
+The worked example is the fictional Roomee test page (private artifact, https://claude.ai/artifact/QDHhVxDHg818Wmy13swQT5). Its structure is the reference; its content is invented, does not describe the real Roomee (which has no deduplication or commute times), and must never be copied into a real case study. The real Roomee case study is `src/app/(site)/work/roomee/page.mdx`.
 
 ## Rules
 
@@ -115,7 +115,7 @@ Components: `Diagram` (kinds: `use-case`, `class`, `state`, `sequence`, `activit
 ### 7. Outcome
 
 - **Impact:** the section 2 metrics with their results, each marked met or missed. When there are no numbers yet, a real quote from a user or the client.
-- **What I learned:** two short paragraphs: one on the product or research, one on the engineering.
+- **Retrospective:** two short paragraphs: one on the product or research, one on the engineering.
 - **Next steps:** up to three, each with why. Missed targets and unbuilt Could requirements usually land here.
 
 Components: `Metrics` (results), `NextSteps`.
@@ -154,7 +154,7 @@ Planned for `src/components/case-study/`, exported from one `index.ts`, and impo
 
 Navigation is automatic: `CaseStudyLayout` renders a contents list from the page's h2 and h3 headings (`src/components/case-study/TableOfContents.tsx`), as a sticky rail from `xl` and a collapsible "On this page" below that. Heading ids come from `rehype-slug`, so section titles double as deep links (`/work/path90#engineering`). Keep h2 and h3 titles short, since they are the menu; use h4 for anything that should stay out of it.
 
-Built so far (with Path90): `Overview` (with `OverviewRow` and `Goal`), `Requirements`, `FactList`, `Decision`, `Traceability`, `Figure`, `Callout`, and `Diagram`. Still planned, to build with the first case study that has the material: `PainPoints`, `Persona`, `JourneyMap`, `Flow`, `AnnotatedFigure`, `StudyRound`, `BeforeAfter`, `Considerations`, `Metrics`, `NextSteps`. Until then, plain Markdown (tables, lists) covers metrics and next steps.
+Built so far (with Path90 and Roomee): `Overview` (with `OverviewRow` and `Goal`), `Requirements`, `FactList`, `Decision`, `Traceability`, `Figure`, `Callout`, `Diagram`, `PainPoints`, `Comparison` (a design reference next to the component it shaped, with what was kept and what changed), and `Video` (a walkthrough with a poster; it never autoplays, and files live in `public/work/<slug>/`). Still planned, to build with the first case study that has the material: `Persona`, `JourneyMap`, `Flow`, `AnnotatedFigure`, `StudyRound`, `BeforeAfter`, `Considerations`, `Metrics`, `NextSteps`. Until then, plain Markdown (tables, lists) covers metrics and next steps.
 
 Diagrams are hand-drawn SVG, one TSX file each, next to the case study in `src/app/(site)/work/<slug>/diagrams/`. They compose the primitives in `src/components/case-study/Diagram.tsx` (`Box`, `Edge`, `Label`, `Actor`, `UseCase`, `ClassBox`, `State`, `Lifeline`, `Message`, `Fragment`). `Diagram` takes a unique `id` (it prefixes the arrow markers, since SVG ids are global to the page) and a `title` that describes the whole diagram in words for screen readers. Mermaid is deliberately not used: it would add a heavy client-side dependency and does not follow the brand tokens.
 
