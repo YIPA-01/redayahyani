@@ -1,6 +1,8 @@
 import { ImageResponse } from 'next/og'
 import { type NextRequest } from 'next/server'
 
+import { R_PATH, variants } from '@/components/Signature'
+
 // Renders the card that LinkedIn, X, and Slack show for a shared link. No
 // external font fetching on purpose: the route has to work offline and during
 // a build with no network.
@@ -24,9 +26,11 @@ export async function GET(request: NextRequest) {
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '80px',
-          backgroundColor: '#18181b',
+          backgroundColor: '#131215',
+          // The site's organic glow, minus the blur Satori cannot render:
+          // uneven pink and coral patches, centre left clear for the title.
           backgroundImage:
-            'radial-gradient(circle at 85% 15%, rgba(20,184,166,0.28), transparent 55%)',
+            'radial-gradient(ellipse 45% 60% at 4% 30%, rgba(184,86,106,0.55), transparent 70%), radial-gradient(ellipse 40% 65% at 96% 70%, rgba(184,86,106,0.5), transparent 70%), radial-gradient(ellipse 30% 40% at 22% 100%, rgba(255,111,90,0.22), transparent 70%)',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -34,7 +38,7 @@ export async function GET(request: NextRequest) {
             <div
               style={{
                 fontSize: 28,
-                color: '#2dd4bf',
+                color: '#ff6f5a',
                 letterSpacing: '0.04em',
                 marginBottom: 28,
               }}
@@ -64,10 +68,22 @@ export async function GET(request: NextRequest) {
             paddingTop: 32,
           }}
         >
-          <div style={{ fontSize: 30, color: '#e4e4e7' }}>Reda Yahyani</div>
-          <div style={{ fontSize: 26, color: '#a1a1aa' }}>
-            Software engineer
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <svg
+              width="44"
+              height="45"
+              viewBox="0 0 720 740"
+              fill="none"
+              stroke="#fafafa"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d={R_PATH} strokeWidth={54} />
+              <path d={variants.compact.y} strokeWidth={30} />
+            </svg>
+            <div style={{ fontSize: 30, color: '#e4e4e7' }}>Reda Yahyani</div>
           </div>
+          <div style={{ fontSize: 26, color: '#a1a1aa' }}>Product engineer</div>
         </div>
       </div>
     ),

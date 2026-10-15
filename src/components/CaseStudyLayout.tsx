@@ -87,7 +87,7 @@ export function CaseStudyLayout({
                   value={
                     <Link
                       href={project.link.href}
-                      className="flex items-center text-teal-500 transition hover:text-teal-600 dark:hover:text-teal-400"
+                      className="flex items-center text-accent-500 transition hover:text-accent-600 dark:hover:text-accent-400"
                     >
                       <LinkIcon className="h-4 w-4 flex-none" />
                       <span className="ml-1.5">{project.link.label}</span>

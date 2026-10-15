@@ -15,6 +15,8 @@ export interface WorkProject {
   name: string
   role: string
   description: string
+  // One line under the pill on the home project cards. Outcome first.
+  tagline?: string
   stack: Array<string>
   year?: string
   // Cover art for the index card and the case study hero. Optional: the
@@ -33,10 +35,11 @@ export const workProjects: Array<WorkProject> = [
   {
     slug: 'roomee',
     name: 'Roomee',
-    role: 'Lead engineer',
+    role: 'Personal project',
     year: '2024 to present',
     description:
-      'A rental marketplace for students and young professionals in Morocco. I lead engineering: listing ingestion, search, and the matching that pairs renters with places they can actually afford.',
+      'A rental marketplace for students and young professionals in Morocco. I build it end to end: listing ingestion, search, and the matching that pairs renters with places they can actually afford.',
+    tagline: 'Rooms that students can actually afford',
     // TODO: confirm stack
     stack: ['Next.js', 'TypeScript', 'PostgreSQL', 'Supabase'],
     link: { href: 'https://roomee.ma', label: 'roomee.ma' },
@@ -50,6 +53,7 @@ export const workProjects: Array<WorkProject> = [
     description:
       'A progressive web app that guides people through parole, tracking obligations, appointments, and check-ins so nothing slips. Built offline-first, because the people using it cannot count on a stable connection.',
     // TODO: confirm stack
+    tagline: 'Offline-first, for people who can’t count on a signal',
     stack: ['React', 'TypeScript', 'PWA', 'Firestore'],
     cover: coverPath90,
     link: { href: 'https://path90app.com', label: 'path90app.com' },
@@ -64,6 +68,7 @@ export const workProjects: Array<WorkProject> = [
     description:
       'A mobile client for conversing with AI agents, built with Exploda. Currently unreleased.',
     // TODO: confirm stack
+    tagline: 'A mobile client for talking to AI agents',
     stack: ['React Native', 'TypeScript'],
     cover: coverAutoAiConnect,
     builtWith: { name: 'Exploda', logo: logoExploda },

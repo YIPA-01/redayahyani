@@ -27,7 +27,7 @@ function AdjacentArticle({
       <span className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
         {direction}
       </span>
-      <span className="mt-2 text-sm font-semibold text-zinc-800 transition group-hover:text-teal-500 dark:text-zinc-100">
+      <span className="mt-2 text-sm font-semibold text-zinc-800 transition group-hover:text-accent-500 dark:text-zinc-100">
         {article.title}
       </span>
     </Link>

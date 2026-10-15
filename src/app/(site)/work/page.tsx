@@ -115,7 +115,7 @@ function ProjectCard({ project }: { project: WorkProject }) {
         <Card.Cta>Read the case study</Card.Cta>
       ) : (
         project.link && (
-          <p className="relative z-10 mt-4 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
+          <p className="relative z-10 mt-4 flex text-sm font-medium text-zinc-400 transition group-hover:text-accent-500 dark:text-zinc-200">
             <LinkIcon className="h-6 w-6 flex-none" />
             <span className="ml-2">{project.link.label}</span>
           </p>
@@ -137,16 +137,16 @@ function LiveCard({
       <Cover href={href}>
         <div
           aria-hidden="true"
-          className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-50 to-zinc-100 dark:from-teal-500/10 dark:to-zinc-800"
+          className="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-50 to-zinc-100 dark:from-accent-500/10 dark:to-zinc-800"
         >
-          <span className="text-4xl font-semibold text-teal-500/40">
+          <span className="text-4xl font-semibold text-accent-500/40">
             {project.title.charAt(0)}
           </span>
         </div>
       </Cover>
       <div className="relative z-10 mt-6 flex items-center gap-2">
-        <span className="flex items-center gap-1.5 rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-500/10 dark:text-teal-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+        <span className="flex items-center gap-1.5 rounded-full bg-accent-50 px-2.5 py-1 text-xs font-medium text-accent-700 dark:bg-accent-500/10 dark:text-accent-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
           In progress
         </span>
         <span className="text-xs text-zinc-400 dark:text-zinc-500">

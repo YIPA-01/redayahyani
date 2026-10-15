@@ -2,3 +2,85 @@
 @import 'tailwindcss/components';
 @import './prism.css';
 @import 'tailwindcss/utilities';
+
+/* Brand tokens, as RGB channels so Tailwind opacity modifiers work
+   (bg-coral/20). Light on :root, dark under .dark, which next-themes sets.
+   Values and the reasoning behind them live in docs/brand.md. */
+@layer base {
+  :root {
+    --bg: 250 250 250;
+    --panel: 240 238 241;
+    --surface: 255 255 255;
+    --ink: 29 27 32;
+    --muted: 105 101 110;
+    --line: 217 213 220;
+    --coral: 240 84 63;
+    --pink: 242 154 165;
+    --lilac: 199 169 217;
+  }
+
+  .dark {
+    --bg: 19 18 21;
+    --panel: 28 26 31;
+    --surface: 35 32 38;
+    --ink: 242 239 244;
+    --muted: 165 160 171;
+    --line: 52 48 58;
+    --coral: 255 111 90;
+    --pink: 184 86 106;
+    --lilac: 108 83 144;
+  }
+}
+
+@layer components {
+  /* The statement card's drafting surface (BlueprintGrid): a 24px grid with
+     a heavier line every 4 cells, faded out behind the centre so the
+     statement sits on a calm area. */
+  .blueprint-grid {
+    background-image: linear-gradient(
+        to right,
+        rgb(var(--line) / 0.9) 1px,
+        transparent 1px
+      ),
+      linear-gradient(to bottom, rgb(var(--line) / 0.9) 1px, transparent 1px),
+      linear-gradient(to right, rgb(var(--line) / 0.4) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--line) / 0.4) 1px, transparent 1px);
+    background-size:
+      96px 96px,
+      96px 96px,
+      24px 24px,
+      24px 24px;
+    mask-image: radial-gradient(
+      ellipse 62% 58% at 50% 50%,
+      rgb(0 0 0 / 0.12) 35%,
+      #000 100%
+    );
+  }
+}
+
+/* Redline annotations (src/components/motion/Redline.tsx) settle in. */
+@keyframes redline {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+/* Process diagram (src/components/sections/ProcessDiagram.tsx): strokes drawn
+   with pathLength="1", so a dash of 1 is the whole line. Armed sections start
+   undrawn; entering removes data-armed and the stroke draws on. */
+.draw-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 900ms cubic-bezier(0.6, 0.05, 0.3, 1);
+}
+
+[data-armed='true'] .draw-line {
+  stroke-dashoffset: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .draw-line {
+    transition: none;
+  }
+}

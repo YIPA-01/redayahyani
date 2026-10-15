@@ -10,12 +10,17 @@ import { listPublicProjects } from '@/lib/work/publicProjects'
 export const revalidate = 300
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticRoutes = ['/', '/about', '/work', '/articles', '/writing'].map(
-    (route) => ({
-      url: absoluteUrl(route),
-      lastModified: new Date(),
-    }),
-  )
+  const staticRoutes = [
+    '/',
+    '/about',
+    '/work',
+    '/services',
+    '/articles',
+    '/writing',
+  ].map((route) => ({
+    url: absoluteUrl(route),
+    lastModified: new Date(),
+  }))
 
   const articles = (await getAllArticles()).map((article) => ({
     url: absoluteUrl(`/articles/${article.slug}`),

@@ -35,6 +35,7 @@ CLAUDE.md is excluded because its examples above show the bad pattern on purpose
 
 ### General voice
 
+- Positioning (product engineer, UX-led), audiences, proof points, and the messaging hierarchy live in `docs/brand.md`. New copy follows it; update it first when the positioning changes. The page structure, navigation, and each page's purpose live in `docs/sitemap.md`.
 - Write in first person. This is a personal site, not a company page.
 - Say what was built and what it took, not what the product category is. "A rental marketplace for students in Morocco. I lead engineering: listing ingestion, search, and matching" beats "A web app whose purpose is to help students find homes."
 - No filler definitions. Never describe a tool by what its marketing page says it is. Say why it gets used here.

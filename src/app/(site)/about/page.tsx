@@ -4,6 +4,7 @@ import Link from 'next/link'
 import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
+import { RoleSplit } from '@/components/sections/RoleSplit'
 import { GitHubIcon, LinkedInIcon, XIcon } from '@/components/SocialIcons'
 import portraitImage from '@/images/portrait.jpg'
 
@@ -22,9 +23,9 @@ function SocialLink({
     <li className={clsx(className, 'flex')}>
       <Link
         href={href}
-        className="group flex text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
+        className="group flex text-sm font-medium text-zinc-800 transition hover:text-accent-500 dark:text-zinc-200 dark:hover:text-accent-500"
       >
-        <Icon className="h-6 w-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500" />
+        <Icon className="h-6 w-6 flex-none fill-zinc-500 transition group-hover:fill-accent-500" />
         <span className="ml-4">{children}</span>
       </Link>
     </li>
@@ -44,7 +45,8 @@ function MailIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 
 export const metadata: Metadata = {
   title: 'About',
-  description: 'I’m Reda Yahyani, a software engineer and passionate writer.',
+  description:
+    'I’m Reda Yahyani, a product engineer in Agadir, Morocco. I design and build web products end to end, starting from the people who use them.',
 }
 
 export default function About() {
@@ -62,26 +64,34 @@ export default function About() {
           </div>
         </div>
         <div className="lg:order-first lg:row-span-2">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-            I’m Reda Yahyani, a software engineer and passionate writer..
+          <h1 className="text-balance text-4xl font-medium tracking-tight text-ink sm:text-5xl">
+            I’m Reda Yahyani. I build products from the user inward.
           </h1>
-          <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
+          <div className="mt-6 space-y-7 text-base text-muted">
             <p>
-              I care about building software that’s solid and
-              well-considered, and I enjoy the craft of engineering as much
-              as the problem-solving behind it. Alongside that, I’ve always
-              been drawn to writing; Using it to think through ideas, share
-              what I learn, and document the process of building things.
+              I once spent three months on a support line for medical diagnostic
+              equipment, solving technical problems for the people using it.
+              That is where I learned that most technical problems are really
+              problems of understanding, and that the fix starts with what the
+              person in front of you is trying to do.
             </p>
             <p>
-              Today, I’m a freelance software engineer ,
-              where I work on helping to build out the product from the ground up.
+              Since 2024 I have designed and built web products end to end for
+              clients, first on my own and now with Exploda, a design and
+              development agency. I take a product from the first flow sketch to
+              the database underneath it. On the side I build Roomee, a rental
+              marketplace that helps students in Morocco find rooms they can
+              actually afford.
+            </p>
+            <p>
+              I studied Computer Systems Engineering at Supmti and work from
+              Agadir, Morocco, with clients anywhere.
             </p>
             <p>
               Away from the terminal I write poetry. It lives on its own page,{' '}
               <Link
                 href="/writing"
-                className="font-medium text-teal-500 transition hover:text-teal-600 dark:hover:text-teal-400"
+                className="font-medium text-accent-500 transition hover:text-accent-600 dark:hover:text-accent-400"
               >
                 here
               </Link>
@@ -117,6 +127,9 @@ export default function About() {
             </SocialLink>
           </ul>
         </div>
+      </div>
+      <div className="mt-24 sm:mt-32">
+        <RoleSplit />
       </div>
     </Container>
   )

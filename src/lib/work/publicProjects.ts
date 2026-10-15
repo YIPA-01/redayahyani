@@ -45,13 +45,42 @@ function toProject(doc: QueryDocumentSnapshot): PublicProject | null {
   }
 }
 
+// The Admin SDK retries an unreachable backend for about 45s before giving
+// up, which would hold the whole page hostage. Live projects are an extra on
+// top of the static case studies, so they get a short budget.
+const LIVE_PROJECTS_TIMEOUT_MS = 4000
+
+function withTimeout<T>(promise: Promise<T>, ms: number) {
+  let timer: ReturnType<typeof setTimeout>
+  let timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`timed out after ${ms}ms`)), ms)
+  })
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+}
+
 export async function listPublicProjects(): Promise<Array<PublicProject>> {
   if (!adminConfigured()) return []
-  const snapshot = await adminDb().collectionGroup('public').get()
-  return snapshot.docs
-    .filter((doc) => doc.id === 'profile')
-    .map(toProject)
-    .filter((project): project is PublicProject => project !== null)
+  // Configured but unreachable (the dev emulator is not running, or a real
+  // outage): /work and the sitemap still render their static projects. This
+  // is logged loudly rather than swallowed, so the gap shows in server logs.
+  try {
+    const snapshot = await withTimeout(
+      adminDb().collectionGroup('public').get(),
+      LIVE_PROJECTS_TIMEOUT_MS,
+    )
+    return snapshot.docs
+      .filter((doc) => doc.id === 'profile')
+      .map(toProject)
+      .filter((project): project is PublicProject => project !== null)
+  } catch (error) {
+    console.error(
+      process.env.FIRESTORE_EMULATOR_HOST
+        ? `Live projects unavailable: is the Firestore emulator running at ${process.env.FIRESTORE_EMULATOR_HOST}? Start it with \`npm run emulators\`.`
+        : 'Live projects unavailable; rendering static work only.',
+      error,
+    )
+    return []
+  }
 }
 
 export async function getPublicProject(slug: string) {

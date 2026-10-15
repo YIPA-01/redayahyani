@@ -3,20 +3,14 @@ import { Header } from '@/components/Header'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    // The flex wrapper used to live in the root layout. It moved here so the
-    // site chrome is one self-contained unit that the portal can opt out of,
-    // and so the rendered DOM is unchanged.
-    <div className="flex w-full">
-      <div className="fixed inset-0 flex justify-center sm:px-8">
-        <div className="flex w-full max-w-7xl lg:px-8">
-          <div className="w-full bg-white ring-1 ring-zinc-100 dark:bg-zinc-900 dark:ring-zinc-300/20" />
-        </div>
-      </div>
-      <div className="relative flex w-full flex-col">
-        <Header />
-        <main className="flex-auto">{children}</main>
-        <Footer />
-      </div>
+    // The site paints its own canvas over the root body color, so the portal,
+    // which renders outside this layout, keeps the original background.
+    // self-start: as a stretched flex item it would stop at the viewport
+    // height, and the root body color would show below the fold.
+    <div className="flex min-h-full w-full flex-col self-start bg-canvas font-sans text-ink">
+      <Header />
+      <main className="flex-auto">{children}</main>
+      <Footer />
     </div>
   )
 }

@@ -73,8 +73,8 @@ export default async function PublicProjectPage({
 
           <header className="flex flex-col">
             <div className="order-first flex items-center gap-2">
-              <span className="flex items-center gap-1.5 rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700 dark:bg-teal-500/10 dark:text-teal-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+              <span className="flex items-center gap-1.5 rounded-full bg-accent-50 px-2.5 py-1 text-xs font-medium text-accent-700 dark:bg-accent-500/10 dark:text-accent-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
                 In progress
               </span>
               <span className="text-sm text-zinc-400 dark:text-zinc-500">

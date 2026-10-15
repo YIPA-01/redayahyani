@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/Button'
 
@@ -33,11 +33,47 @@ function MailIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 
 export function Contact() {
   let [message, setMessage] = useState('')
+  let messageRef = useRef<HTMLTextAreaElement>(null)
   let trimmedMessage = message.trim()
+
+  // Every "Start a project" link points at /services#contact, so arriving
+  // there puts the cursor straight in the message. Two ways in: a page load or
+  // navigation that lands with the hash (mount), and a click while already on
+  // /services, where the router updates the hash with pushState and no
+  // hashchange fires (the click listener). preventScroll leaves the scroll to
+  // the hash, which respects the section's scroll margin under the header.
+  useEffect(() => {
+    let frame = 0
+    let focusIfContact = () => {
+      if (window.location.hash === '#contact') {
+        messageRef.current?.focus({ preventScroll: true })
+      }
+    }
+    let onClick = (event: MouseEvent) => {
+      let link = (event.target as Element | null)?.closest('a[href]')
+      if (!(link instanceof HTMLAnchorElement)) return
+      let url = new URL(link.href)
+      if (url.hash !== '#contact' || url.pathname !== window.location.pathname)
+        return
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(focusIfContact)
+    }
+
+    focusIfContact()
+    window.addEventListener('hashchange', focusIfContact)
+    document.addEventListener('click', onClick)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('hashchange', focusIfContact)
+      document.removeEventListener('click', onClick)
+    }
+  }, [])
   let sendDisabled = trimmedMessage.length === 0
 
   function sendViaWhatsApp() {
-    let url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(trimmedMessage)}`
+    let url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+      trimmedMessage,
+    )}`
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
@@ -58,17 +94,20 @@ export function Contact() {
       </p>
       <div className="mt-6">
         <textarea
+          ref={messageRef}
+          id="contact-message"
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           placeholder="Your message"
           aria-label="Your message"
           rows={4}
           required
-          className="w-full min-w-0 resize-none appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-500/10 sm:text-sm dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10"
+          className="w-full min-w-0 resize-none appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-2 shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-accent-500 focus:outline-none focus:ring-4 focus:ring-accent-500/10 sm:text-sm dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-accent-400 dark:focus:ring-accent-400/10"
         />
         <div className="mt-4 flex gap-3">
           <Button
             type="button"
+            variant="secondary"
             onClick={sendViaWhatsApp}
             disabled={sendDisabled}
             className="flex-1 disabled:cursor-not-allowed disabled:opacity-50"

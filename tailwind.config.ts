@@ -24,5 +24,52 @@ export default {
       '9xl': ['8rem', { lineHeight: '1' }],
     },
     typography: typographyStyles,
+    extend: {
+      // Brand tokens from src/styles/tailwind.css. Extend only: the portal
+      // still uses the zinc palette and must keep working unchanged.
+      colors: {
+        canvas: 'rgb(var(--bg) / <alpha-value>)',
+        panel: 'rgb(var(--panel) / <alpha-value>)',
+        surface: 'rgb(var(--surface) / <alpha-value>)',
+        ink: 'rgb(var(--ink) / <alpha-value>)',
+        muted: 'rgb(var(--muted) / <alpha-value>)',
+        line: 'rgb(var(--line) / <alpha-value>)',
+        coral: 'rgb(var(--coral) / <alpha-value>)',
+        // Not 'pink': that would replace Tailwind's pink scale, which
+        // src/styles/prism.css uses for code highlighting.
+        blush: 'rgb(var(--pink) / <alpha-value>)',
+        lilac: 'rgb(var(--lilac) / <alpha-value>)',
+        // Replaces teal as the site's link and highlight color. A static
+        // scale so the existing 50 to 700 class names keep their meaning.
+        accent: {
+          50: '#fef3f1',
+          100: '#fde4df',
+          300: '#ff9a8a',
+          400: '#ff6f5a',
+          500: '#f0543f',
+          600: '#d63f2b',
+          700: '#b23222',
+        },
+      },
+      fontFamily: {
+        sans: [
+          'var(--font-sans)',
+          'Futura',
+          'Century Gothic',
+          'ui-sans-serif',
+          'system-ui',
+          'sans-serif',
+        ],
+        serif: ['var(--font-serif)', 'Iowan Old Style', 'Georgia', 'serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'Menlo', 'monospace'],
+        pixel: ['var(--font-pixel)', 'ui-monospace', 'monospace'],
+      },
+      keyframes: {
+        marquee: { to: { transform: 'translateX(-50%)' } },
+      },
+      animation: {
+        marquee: 'marquee 28s linear infinite',
+      },
+    },
   },
 } satisfies Config
