@@ -87,7 +87,7 @@ The mark is Reda's handwritten signature, traced and smoothed: a heavy R drawn i
 - **Optical size:** pass `optical="small"` at 32px and below. The as-drawn weights (R 22, Y 7 on the trace grid) vanish at icon size, so small renders use R 54 and Y 30.
 - **Favicon:** `src/app/icon.svg` is the compact variant at small weights, ink on light and white on dark.
 - **Color:** ink or white. Coral is reserved for the site's single accent and does not go on the mark.
-- **Motion:** where the mark animates, the R is written first in one stroke, then the Y slashes across. It plays once and not at all under reduced motion.
+- **Motion:** where the mark animates, the R is written first in one stroke, then the Y slashes across. It plays once and not at all under reduced motion. The one exception is the phone menu trigger (below), where the Y re-signs itself every 3 s.
 
 ### Type
 
@@ -113,7 +113,7 @@ Tokens live in `src/styles/tailwind.css` as RGB channels (light on `:root`, dark
 | `--muted` | `muted` | #69656e | #a5a0ab | Secondary text |
 | `--line` | `line` | #d9d5dc | #34303a | Hairlines and borders |
 | `--coral` | `coral` | #f0543f | #ff6f5a | The one accent: links on hover, emphasis, the hatch fill |
-| `--pink` | `blush` | #f29aa5 | #b8566a | The OG card patches only |
+| `--pink` | `blush` | #f29aa5 | #b8566a | The OG card patches, and the Articles card in the phone menu |
 
 - The Tailwind name for pink is `blush`, because `pink` would replace Tailwind's own pink scale, which the code highlighting in `src/styles/prism.css` uses.
 - `accent-*` is a static coral scale (50 to 700) that replaced teal in the pages that kept their Spotlight layout. New work should use `coral`.
@@ -138,7 +138,12 @@ Motion exists to show the two sides of the work: design (serif, redlines, wirefr
 - **Wireframe peel:** hovering a project card wipes a coral blueprint of a screen over the cover, with the stack in Bitwise. It never takes clicks from the card.
 - **Fill button** (`FillButton`): every "Start a project" pill (header, home contact band) fills on hover the way gsap.com does: the ink grows as a circle from the exact point the pointer entered and drains back toward where it left, on a long soft ease (700ms) so it pours rather than snaps. The inverted label is clipped to the same circle, so the text is readable at every frame. Keyboard focus fills from the centre; touch taps do not trigger it.
 - **Redlines** (`Redline`): hovering a section heading shows its type spec and dimensions, read live from the computed style. Fine pointers only; never on body text.
-- **Header marquee:** the desktop navigation is the marquee: Work, Services, Articles, About scroll slowly in a thin pill, the current page in coral, pausing on hover or focus. Only the first copy of each link is reachable by keyboard and screen readers. Phones use the Menu popover.
+- **Header marquee:** the desktop navigation is the marquee: Work, Services, Articles, About scroll slowly in a thin pill, the current page in coral, pausing on hover or focus. Only the first copy of each link is reachable by keyboard and screen readers.
+- **Phone menu** (`MobileMenu`): on phones the signature is the menu.
+  - Idle: while the menu is closed, the Y re-signs itself every 3 s (a 0.9 s stroke redraw). It holds still while the mark is hovered or focused.
+  - Open: MorphSVG turns the R into the rising bar of a close mark and the Y into the falling one, and Flip flies the section cards out of the mark into a stack at the bottom of a solid white (dark: black) page. The cards are Work in coral, Services in surface, Articles in blush, and About in ink. Each shows a real count (projects, ways to work together, articles), and About shows the mark.
+  - Close: the morph reverses, and the cards fold back into the mark.
+  - Under reduced or no motion there is no idle, the mark swaps instantly, and the cards just appear. The site's Motion setting is the pause control for the idle.
 - One slow ambient movement per screen at most (the morph, the header marquee, the process dot). The blueprint grid only moves in answer to the cursor.
 - Hover feedback is small: a 4 to 6px lift, an arrow nudging 2px, a slice pulling apart.
 - Everything that moves on its own stops under `prefers-reduced-motion`.

@@ -1,7 +1,14 @@
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
+import { type MenuCounts } from '@/components/MobileMenu'
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({
+  children,
+  menuCounts,
+}: {
+  children: React.ReactNode
+  menuCounts: MenuCounts
+}) {
   return (
     // The site paints its own canvas over the root body color, so the portal,
     // which renders outside this layout, keeps the original background.
@@ -16,7 +23,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       >
         Skip to content
       </a>
-      <Header />
+      <Header menuCounts={menuCounts} />
       <main id="main" tabIndex={-1} className="flex-auto focus:outline-none">
         {children}
       </main>

@@ -39,6 +39,13 @@ async function importArticle(
   return article
 }
 
+// Just the count, for the mobile menu. Same glob as getAllArticles, without
+// importing every article module on every page.
+export async function countArticles() {
+  let files = await glob('*/page.mdx', { cwd: './src/app/(site)/articles' })
+  return files.length
+}
+
 export async function getAllArticles() {
   let articleFilenames = await glob('*/page.mdx', {
     // Articles live in the (site) route group. A wrong path here fails

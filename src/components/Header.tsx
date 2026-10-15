@@ -4,23 +4,16 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import {
-  Popover,
-  PopoverButton,
-  PopoverOverlay,
-  PopoverPanel,
-  Transition,
-  TransitionChild,
-} from '@headlessui/react'
 
 import { DisplayPreferences } from '@/components/a11y/DisplayPreferences'
 import { Container } from '@/components/Container'
 import { FillButton } from '@/components/FillButton'
+import { type MenuCounts, MobileMenu } from '@/components/MobileMenu'
 import { Marquee } from '@/components/sections/Marquee'
 import { Signature } from '@/components/Signature'
 
 // Freelance first: Services sits right after Work. On desktop this list
-// scrolls in the header marquee; on phones it is the Menu popover. /lab joins
+// scrolls in the header marquee; on phones the signature opens MobileMenu. /lab joins
 // once it has a first experiment (docs/sitemap.md).
 const navigation = [
   { href: '/work', label: 'Work' },
@@ -28,35 +21,6 @@ const navigation = [
   { href: '/articles', label: 'Articles' },
   { href: '/about', label: 'About' },
 ]
-
-function CloseIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-      <path
-        d="m17.25 6.75-10.5 10.5M6.75 6.75l10.5 10.5"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function ChevronDownIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
-  return (
-    <svg viewBox="0 0 8 6" aria-hidden="true" {...props}>
-      <path
-        d="M1.75 1.75 4 4.25l2.25-2.5"
-        fill="none"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
 
 function SunIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -87,75 +51,6 @@ function MoonIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
         strokeLinejoin="round"
       />
     </svg>
-  )
-}
-
-function MobileNavigation(
-  props: React.ComponentPropsWithoutRef<typeof Popover>,
-) {
-  return (
-    <Popover {...props}>
-      <PopoverButton className="group flex items-center rounded-full border border-line px-4 py-2 text-sm font-medium text-ink transition hover:border-ink/40">
-        Menu
-        <ChevronDownIcon className="ml-3 h-auto w-2 stroke-muted group-hover:stroke-ink" />
-      </PopoverButton>
-      <Transition>
-        <TransitionChild
-          enter="duration-150 ease-out"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="duration-150 ease-in"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <PopoverOverlay className="fixed inset-0 z-50 bg-ink/30 backdrop-blur-sm dark:bg-black/70" />
-        </TransitionChild>
-        <TransitionChild
-          enter="duration-150 ease-out"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="duration-150 ease-in"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <PopoverPanel
-            focus
-            className="fixed inset-x-4 top-8 z-50 origin-top rounded-3xl bg-surface p-8 ring-1 ring-line"
-          >
-            <div className="flex flex-row-reverse items-center justify-between">
-              <PopoverButton aria-label="Close menu" className="-m-1 p-1">
-                <CloseIcon className="h-6 w-6 text-muted" />
-              </PopoverButton>
-              <h2 className="text-sm font-medium text-muted">Navigation</h2>
-            </div>
-            <nav className="mt-6">
-              <ul className="-my-2 divide-y divide-line text-base text-ink">
-                {navigation.map((item) => (
-                  <li key={item.href}>
-                    <PopoverButton
-                      as={Link}
-                      href={item.href}
-                      className="block py-2"
-                    >
-                      {item.label}
-                    </PopoverButton>
-                  </li>
-                ))}
-                <li>
-                  <PopoverButton
-                    as={Link}
-                    href="/services#contact"
-                    className="block py-2 font-medium text-coral-text"
-                  >
-                    Start a project
-                  </PopoverButton>
-                </li>
-              </ul>
-            </nav>
-          </PopoverPanel>
-        </TransitionChild>
-      </Transition>
-    </Popover>
   )
 }
 
@@ -199,7 +94,7 @@ function PlayIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
 
 const MARQUEE_PAUSED_KEY = 'marquee-paused'
 
-export function Header() {
+export function Header({ menuCounts }: { menuCounts: MenuCounts }) {
   let pathname = usePathname()
   // The menu scrolls on its own, so it gets a visible pause control
   // (WCAG 2.2.2), remembered for the visit.
@@ -218,13 +113,15 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line/60 bg-canvas/85 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-line/60 bg-canvas/85 backdrop-blur [[data-menu-open]_&]:border-transparent [[data-menu-open]_&]:bg-white [[data-menu-open]_&]:backdrop-blur-none dark:[[data-menu-open]_&]:bg-black">
       <Container>
         <div className="flex h-16 items-center gap-4">
+          {/* On phones the signature is the menu; from md it links home. */}
+          <MobileMenu counts={menuCounts} className="md:hidden" />
           <Link
             href="/"
             aria-label="Reda Yahyani, home"
-            className="flex items-center gap-2.5 font-medium tracking-wide"
+            className="hidden items-center gap-2.5 font-medium tracking-wide md:flex"
           >
             <Signature
               variant="compact"
@@ -259,7 +156,8 @@ export function Header() {
               )}
             </button>
           </div>
-          <div className="ml-auto flex items-center gap-1 md:ml-0">
+          {/* Above the open mobile menu, so theme and display stay usable. */}
+          <div className="relative z-50 ml-auto flex items-center gap-1 md:ml-0">
             <DisplayPreferences />
             <ThemeToggle />
             <FillButton
@@ -268,7 +166,6 @@ export function Header() {
             >
               Start a project
             </FillButton>
-            <MobileNavigation className="md:hidden" />
           </div>
         </div>
       </Container>
