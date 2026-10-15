@@ -1,5 +1,6 @@
 import rehypePrism from '@mapbox/rehype-prism'
 import nextMDX from '@next/mdx'
+import rehypeSlug from 'rehype-slug'
 import remarkGfm from 'remark-gfm'
 
 /** @type {import('next').NextConfig} */
@@ -22,7 +23,9 @@ const withMDX = nextMDX({
   extension: /\.mdx?$/,
   options: {
     remarkPlugins: [remarkGfm],
-    rehypePlugins: [rehypePrism],
+    // rehypeSlug gives every heading an id, for the case study contents
+    // rail and for deep links.
+    rehypePlugins: [rehypeSlug, rehypePrism],
   },
 })
 

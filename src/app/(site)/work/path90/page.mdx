@@ -1,38 +1,533 @@
 import { CaseStudyLayout } from '@/components/CaseStudyLayout'
+import {
+  Callout,
+  Decision,
+  FactList,
+  Figure,
+  Goal,
+  Overview,
+  OverviewRow,
+  Requirements,
+  Traceability,
+} from '@/components/case-study'
 import { caseStudyMetadata } from '@/lib/work/metadata'
+import homeScreen from '@/images/work/path90/home.jpg'
+
+import { Architecture } from './diagrams/Architecture'
+import { DomainModel } from './diagrams/DomainModel'
+import { OfflineCompletion } from './diagrams/OfflineCompletion'
+import { ParticipantStatus } from './diagrams/ParticipantStatus'
+import { ReminderPipeline } from './diagrams/ReminderPipeline'
+import { UseCases } from './diagrams/UseCases'
 
 export const metadata = caseStudyMetadata('path90')
 
 export default (props) => <CaseStudyLayout slug="path90" {...props} />
 
-{/* The facts below come from src/lib/work/projects.ts. Everything marked TODO
-    needs specifics only Reda has. Placeholder prose is deliberately absent
-    rather than invented. */}
+{/* Structure: docs/case-study.md, client-design variant (sections 3 to 5
+    become "The design I was given"). Every engineering claim comes from the
+    YIPA-01/Path90 repo. TODO comments mark what only Reda can supply; do not
+    replace them with invented prose. */}
 
-## The problem
+## Overview
 
-Parole is a schedule of obligations with real consequences for missing one: appointments, check-ins, conditions that vary per person. The people managing that schedule are the least well served by a normal web app. They may not have a stable connection, a recent phone, or a data plan that survives the month. An app that only works online is an app that fails exactly when someone needs to confirm what they owe and when.
+<Overview>
+  <OverviewRow label="The product">
+    A phone app for people in their first 90 days after release from prison,
+    and a dashboard for the case managers who support them. Participants get
+    a daily plan, their appointments, and simple money tools. Case managers see
+    who is on track, who is falling behind, and who has gone quiet.
+  </OverviewRow>
+  <OverviewRow label="The problem">
+    The first 90 days after release are a run of tasks and appointments that
+    cannot slip, from getting an ID to meeting a parole officer. Reentry
+    organizations need to see who is struggling while there is still time to
+    help, and to show the people who fund them what worked.
+  </OverviewRow>
+  <OverviewRow label="The goal">
+    <Goal>
+      Someone in their first week home opens their phone and knows what to do
+      today, even with no signal.
+    </Goal>
+  </OverviewRow>
+  <OverviewRow label="Duration">
+    May to July 2026: about eleven weeks from the first commit to the last
+    hardening fix.
+  </OverviewRow>
+  <OverviewRow label="My role">
+    Freelance engineer with Exploda. I built the participant app, the case
+    manager dashboard, and the backend from the client's Figma design.
+  </OverviewRow>
+  <OverviewRow label="Responsibilities">
+    <ul>
+      <li>Turning the design into a responsive, installable web app</li>
+      <li>Data model, row level security, and database functions</li>
+      <li>Offline support for the daily task loop</li>
+      <li>Push reminders and scheduled jobs</li>
+      <li>Case manager metrics, outcome report, and Excel export</li>
+      <li>Deploys, and moving the backend between Supabase regions</li>
+    </ul>
+  </OverviewRow>
+  <OverviewRow label="Team">
+    The client's design agency who owned the Figma (Exploda) .
+    {/* TODO: anyone else involved, by role (no names, per the client). */}
+  </OverviewRow>
+</Overview>
 
-## What I built
+## Business requirements
 
-A progressive web app, built with Exploda, that tracks obligations, appointments, and check-ins in one place.
+The brief arrived as a design, not a document. In the first two days I wrote it down as a use case model and a class diagram alongside the first schema, and the requirements below come from that model. Everything later on this page points back to their IDs.
 
-**Offline-first.** The app works with no connection and reconciles when one returns. That is the central architectural decision and it constrains everything downstream: what can be written locally, how conflicts resolve, and what the user sees when the two disagree.
+<FactList
+  groups={[
+    {
+      title: 'Business goals',
+      items: [
+        'Run tighter reentry programs, with every participant’s progress in one place.',
+        'Let each case manager support more people by flagging who needs attention.',
+        'Report outcomes to funders with confidence.',
+      ],
+    },
+    {
+      title: 'Stakeholders',
+      items: [
+        'Participants, in their first 90 days after release.',
+        'Case managers, each with a caseload.',
+        'Reentry organizations, who buy and run the program.',
+        'Funders, who receive the outcome reports.',
+      ],
+    },
+  ]}
+/>
 
-**PWA rather than native.** Installable from a link, no app store, no install friction for someone on a borrowed or low-end device.
+What the organization measures, as the outcome report computes it:
 
-{/* TODO: the sync and conflict-resolution model. What happens when the same
-    record changes locally and remotely? This is the interesting part. */}
+| Measure | How it is computed |
+| --- | --- |
+| Reached day 30, day 60, completed | From the release date, and the graduation rule below |
+| Task completion | Completed tasks over assigned tasks |
+| Appointment attendance | Attended over attended plus missed |
+| Money tools engagement | Any expense, savings goal, or spending plan |
+| Currently at risk | The participant status, below |
 
-## What it took
+{/* TODO: the client's targets for these measures, if they set any. */}
 
-{/* TODO: the constraint that shaped it. Offline storage limits? Notification
-    delivery without a connection? Compliance or privacy requirements around
-    parole data? Write the tradeoff and the option you rejected. */}
+<FactList
+  groups={[
+    {
+      title: 'Constraints',
+      items: [
+        'Phone first: every change checked at 375px before merging.',
+        'Installs from a link on iPhone and Android, with no app store.',
+        'Connectivity that drops out.',
+        'Sensitive records about people under supervision.',
+        'A Vercel Hobby plan, which runs scheduled jobs at most once a day.',
+      ],
+    },
+    {
+      title: 'Scope',
+      items: [
+        'In: the participant app, the case manager dashboard, reminders, and the outcome export.',
+        'Out of this build: languages other than English, which are listed in settings but disabled until real translations exist.',
+      ],
+    },
+  ]}
+/>
 
-## Where it stands
+<Requirements
+  items={[
+    {
+      id: 'R1',
+      text: 'Participants see where they are in the 90 days and what to do today.',
+      refs: 'UC-06',
+    },
+    {
+      id: 'R2',
+      text: 'Completing a task works with no connection and syncs later.',
+      refs: 'UC-07, UC-26',
+    },
+    {
+      id: 'R3',
+      text: 'Reminders arrive 24 hours and 1 hour before mandatory appointments.',
+      refs: 'UC-16',
+    },
+    {
+      id: 'R4',
+      text: 'Case managers see each participant’s status: on track, at risk, or inactive.',
+      refs: 'UC-21, UC-24',
+    },
+    {
+      id: 'R5',
+      text: 'Outcomes export for funders, by where people are in the program.',
+      refs: 'UC-25',
+    },
+    {
+      id: 'R6',
+      text: 'The app installs from a link on iPhone and Android.',
+      refs: 'UC-27',
+    },
+    {
+      id: 'R7',
+      text: 'Money tools: a spending plan, savings goals, and investing basics.',
+      refs: 'UC-10 to UC-12',
+    },
+    {
+      id: 'R8',
+      text: 'A resource library and a job application tracker.',
+      refs: 'UC-19, UC-20',
+    },
+    {
+      id: 'R9',
+      text: 'Case managers publish a week by week roadmap of tasks.',
+      refs: 'Added in July, during the build',
+    },
+  ]}
+/>
 
-Path90 is live at [path90app.com](https://path90app.com).
+{/* TODO: priorities (must, should, could) if the client set them. Add a
+    `priority` to each item above once confirmed. */}
 
-{/* TODO: outcome. Users, jurisdictions, retention, whatever is true and
-    shareable. */}
+## The design I was given
+
+<Callout label="The client’s work and mine">
+  The client handed over a finished Figma design: the screens, the flows, and
+  the visual language. The research behind it was theirs, so this page has no
+  personas or usability rounds. My part was turning that design into a
+  working product.
+</Callout>
+
+The design is built around a participant's day. Home opens with a greeting and the number of days done, then the next appointment, today's to-dos, and savings goals. A week by week journey, money tools, appointments on a map, and a resource library with a job tracker are one tap away in the bottom navigation.
+
+<Figure
+  src={homeScreen}
+  alt="The Path90 home screen: a welcome with days completed, progress cards, a reminder for the next meeting, a to-do list with priorities, savings goals, and a week of appointments."
+  caption="The participant home screen: days completed, the next appointment, today’s to-dos, and goals."
+/>
+
+{/* TODO: confirm whether this image is a Figma export or a screenshot of
+    the build, and swap in phone-size screens if you have them. */}
+
+A design shows the happy path. Building it meant deciding what happens around the edges:
+
+- **Offline states.** When the connection drops, a banner says the app is showing saved data and how many changes are waiting. Completing a task offline says "Saved, will sync when back online" instead of pretending it reached the server.
+- **Installing on an iPhone.** Safari has no install prompt, so iPhone users get the steps (Share, then Add to Home Screen). Android gets the native prompt.
+- **Touch targets.** Navigation and primary controls are at least 44px.
+- **Bottom navigation.** In July, Appointments replaced Profile in the mobile navigation.
+
+{/* TODO: confirm which of these four were your decisions and which were
+    already in the Figma, and add the reason for the navigation change. */}
+
+## Engineering
+
+The design makes two promises the code has to keep: a participant can always see today's plan and tick it off, and a case manager's badge tells the truth. Most of the engineering serves those two.
+
+### Conception
+
+I modelled the system before building it: who uses it, what the domain is made of, and how the two flows that matter most behave over time.
+
+<UseCases />
+
+The class diagram I started with had four core classes for tasks and users. Real programs needed more structure: tasks with steps, and a roadmap that releases tasks week by week. This is the model the app runs on today.
+
+<DomainModel />
+
+The status badge is the case manager's main tool, so its rules are explicit. Each transition below is a condition in one SQL function.
+
+<ParticipantStatus />
+
+<OfflineCompletion />
+
+### Implementation
+
+<Architecture />
+
+#### Key decisions
+
+<Decision
+  id="D1"
+  refs="R1, R2"
+  title="Queue only the daily loop offline"
+  context="The one thing a participant must be able to do anywhere is see today’s tasks and tick them off. Logging an expense or adding an appointment can wait for a signal."
+  options={[
+    {
+      name: 'Online only',
+      note: 'Simple, and it fails at the moment someone is standing outside an office with no data.',
+    },
+    {
+      name: 'A local database with two-way sync',
+      note: 'Every screen works offline, but it means conflict resolution across a dozen tables, for one developer in eleven weeks.',
+    },
+    {
+      name: 'Cached reads, queued task completion',
+      note: 'The query cache persists to IndexedDB, and exactly two writes may queue: completing a task and ticking a step.',
+      chosen: true,
+    },
+  ]}
+  consequences="Conflicts are rare by construction: a task belongs to one participant, so the last write wins safely. The one real conflict, a case manager completing a task on someone’s behalf, is settled by the database: row level security refuses a participant’s update to a row an admin completed. Every other screen is read only offline."
+/>
+
+<Decision
+  id="D2"
+  refs="R3"
+  title="Schedule reminders from the database"
+  context="A reminder one hour before a mandatory appointment means something has to check every minute. Vercel Cron on the Hobby plan runs at most once a day."
+  options={[
+    {
+      name: 'Vercel Cron',
+      note: 'Once a day on this plan, so the one-hour window is missed.',
+    },
+    {
+      name: 'A paid plan or a separate worker',
+      note: 'Another bill or another service to run, for one job.',
+    },
+    {
+      name: 'pg_cron and pg_net in Supabase',
+      note: 'The database already has a scheduler. It calls the app’s own route every minute, so the reminder logic stays in one place.',
+      chosen: true,
+    },
+  ]}
+  consequences="The app URL and the shared secret live in Supabase Vault, and the route refuses every call if its secret is not set. Deployment protection blocked the calls at first, so the job sends a bypass header when one is configured. Each row gets a sent flag, which keeps a reminder from going out twice."
+/>
+
+<Decision
+  id="D3"
+  refs="R4, R5"
+  title="Enforce access in the database"
+  context="Participants and case managers both read and write the database straight from the browser. Whatever stops one participant from reading another’s record has to live there."
+  options={[
+    {
+      name: 'An API route for every read and write',
+      note: 'One place to check, but a server hop for every checkbox, and queued offline writes would need their own endpoint.',
+    },
+    {
+      name: 'Role from the login token',
+      note: 'Cheap, but token metadata is not authoritative and can go stale.',
+    },
+    {
+      name: 'Row level security, role read from the users table',
+      note: 'Own row or admin, case notes append only, and no participant can change their own role.',
+      chosen: true,
+    },
+  ]}
+  consequences="Scheduled jobs run as the service role, where the admin check sees no signed-in user and returns nothing. So the caseload query has a separate raw version for the cron routes. Two functions for one query is the cost of keeping the guarded one strict."
+/>
+
+<Decision
+  id="D4"
+  refs="R9"
+  title="Copy task settings at assignment"
+  context="Case managers edit task templates and publish roadmaps to everyone on a program. A participant’s past tasks should not change when a template does."
+  options={[
+    {
+      name: 'Read the template live',
+      note: 'No duplication, but editing a template rewrites what every participant was assigned.',
+    },
+    {
+      name: 'Copy at assignment',
+      note: 'Each assigned task keeps its own mandatory flag, priority, frequency, and time estimate. Publishing a roadmap is idempotent through a unique key on task, participant, and due date.',
+      chosen: true,
+    },
+  ]}
+  consequences="Publishing twice is safe. One gap remains: the status and graduation functions still read the mandatory flag from the template, not the copy. It is in next steps."
+/>
+
+#### Physical data model
+
+The domain model became tables almost one to one. The assignment table carries the copied settings, the completion state, and the reminder flags that make scheduled jobs safe to rerun:
+
+```sql
+create table public.user_tasks (
+  id               uuid    primary key default gen_random_uuid(),
+  task_id          uuid    not null references public.tasks(id) on delete cascade,
+  user_id          uuid    not null references public.users(id) on delete cascade,
+  appointment_id   uuid    references public.appointments(id) on delete set null,
+  due_date         date    not null,
+  priority         public.task_priority  not null default 'medium',
+  frequency        public.task_frequency not null default 'once',
+  is_mandatory     boolean not null default false,
+  time_estimate    text,
+  is_completed     boolean not null default false,
+  completed_at     timestamptz,
+  completed_by_admin boolean not null default false,
+  due_reminder_sent    boolean not null default false,
+  missed_reminder_sent boolean not null default false,
+  unique (task_id, user_id, due_date)
+);
+```
+
+And the status diagram above is this one expression, evaluated on every read:
+
+```sql
+select case
+  when (select last_active_at from u) is null
+    or (select last_active_at from u) < now() - interval '7 days'
+    then 'inactive'
+  when (select flag from missed)
+    or (
+      (select total from recent) > 0
+      and (select done from recent)::numeric / (select total from recent) < 0.5
+    )
+    then 'at_risk'
+  else 'on_track'
+end;
+```
+
+#### Deep dive: a queue that survives closing the app
+
+React Query can pause a mutation while the phone is offline and persist it with the rest of the cache. The catch is that a function cannot be serialized. A mutation restored from IndexedDB after the app was closed comes back with its variables but without the code to run. So the two offline mutations are registered as defaults on the query client under a key, and every screen that completes a task uses the key rather than its own function:
+
+```ts
+qc.setMutationDefaults(MUTATION_KEYS.completeUserTask, {
+  mutationFn: (userTaskId: string) => completeUserTask(userTaskId),
+  onMutate: async (userTaskId: string) => {
+    await qc.cancelQueries({ queryKey: ['tasks'] })
+    const previous = qc.getQueriesData({ queryKey: ['tasks'] })
+    // Trimmed: mark the task complete in every cached list and in the
+    // detail view, then show "done" online or "saved, will sync" offline.
+    return { previous }
+  },
+  onError: (_err, _vars, context) => {
+    // Trimmed: restore every cached list from `previous`.
+  },
+  onSettled: () => {
+    qc.invalidateQueries({ queryKey: ['tasks'] })
+  },
+})
+```
+
+On startup the provider restores the cache from IndexedDB and then calls `resumePausedMutations()`, so a task ticked on the bus syncs the next time the app opens with a signal. The persisted cache carries a version key that I bump whenever the shape of a task changes, so an old cache never feeds new code. I bumped it once, when assignments started carrying their own settings (D4).
+
+#### Reminders while the app is closed
+
+The other flow worth drawing is the one that has to work when nobody has the app open.
+
+<ReminderPipeline />
+
+#### Quality attributes
+
+<FactList
+  groups={[
+    {
+      title: 'Reliability',
+      items: [
+        'Reminders carry a sent flag per row, so rerunning a job is safe.',
+        'Push subscriptions the push service reports as gone are deleted.',
+        'Queued task completions survive the app being closed.',
+      ],
+    },
+    {
+      title: 'Security and privacy',
+      items: [
+        'Row level security on every table, with the role read from the database.',
+        'Case notes are append only: no policy allows edit or delete.',
+        'Location is a zip code or an optional device location, and the sign-up says it is never sold or shared.',
+      ],
+    },
+    {
+      title: 'Accessibility',
+      items: [
+        'Navigation and primary controls are at least 44px.',
+        'Icon-only buttons carry accessible names.',
+        'Gap: the viewport disables pinch zoom, which blocks people who need larger text.',
+        'Gap: no dark mode.',
+      ],
+    },
+    {
+      title: 'Known gaps',
+      items: [
+        'No automated tests.',
+        'Some case manager pages (caseload, exports) are still placeholders.',
+        'The savings milestone notification is a stub.',
+      ],
+    },
+  ]}
+/>
+
+#### Testing and delivery
+
+CI runs lint and a TypeScript check on every pull request to main, dev, and phase branches. Vercel only builds those branches, and the pull request checklist asks for a check at 375px and an install test on iOS Safari and Android Chrome. There are no automated tests. The type checker and the database policies carry the weight, and the policies are exactly the code that should have a test suite next.
+
+In July I moved the backend from a Supabase project in the EU to one in the US, keeping the EU project as a rollback. A schema dump leaves things behind, so I recreated the Vault secrets by hand and restored the trigger on `auth.users` that creates a participant's profile at sign-up.
+
+{/* TODO: the reason for the region move, if it is shareable. */}
+
+#### Traceability
+
+<Traceability
+  rows={[
+    {
+      req: 'R1',
+      design: 'Home greeting with days done; Journey shows Day X of 90',
+      implementation: 'Program day from the release date',
+      verified: 'Manual check at 375px, per the PR checklist',
+    },
+    {
+      req: 'R2',
+      design: 'Offline banner, “Saved, will sync”',
+      implementation: 'D1: persisted cache, two queued mutations',
+      verified: 'Manual check',
+    },
+    {
+      req: 'R3',
+      design: 'Push before mandatory appointments',
+      implementation: 'D2: pg_cron every minute, per-row sent flags',
+      verified: 'Manual check; runs are logged in cron.job_run_details',
+    },
+    {
+      req: 'R4',
+      design: 'Status badge on the caseload',
+      implementation: <code>user_status()</code>,
+      verified: 'Manual check',
+    },
+    {
+      req: 'R5',
+      design: 'Export for grant reporting',
+      implementation: 'Excel workbook: summary and per-participant sheets',
+      verified: 'Manual check',
+    },
+    {
+      req: 'R6',
+      design: 'Install prompt, iPhone instructions',
+      implementation: 'Service worker registered by hand for the App Router',
+      verified: 'iOS Safari and Android Chrome, per the PR checklist',
+    },
+    {
+      req: 'R7',
+      design: 'Spending plan, savings tracker, investing',
+      implementation: 'Finance tables under own-row policies',
+      verified: 'Manual check',
+    },
+    {
+      req: 'R8',
+      design: 'Resource tabs, job tracker',
+      implementation: 'Uploaded resource files by category',
+      verified: 'Manual check',
+    },
+    {
+      req: 'R9',
+      design: 'Roadmap editor, “Publish to participants”',
+      implementation: 'D4: idempotent publish function',
+      verified: 'By design: a unique key makes republishing a no-op',
+    },
+  ]}
+/>
+
+{/* TODO: replace "Manual check" with how each requirement was actually
+    verified (client sign-off, a test session, a device check). */}
+
+## Outcome
+
+Path90 shipped in about eleven weeks and three phases: accounts and onboarding, the participant modules, then the case manager dashboard, with a hardening pass on admin sign-in and role checks at the end. It is live at [path90app.com](https://path90app.com).
+
+{/* TODO: impact. Anything true and shareable: organizations or participants
+    using it, a quote from the client. If there are numbers, report them
+    against the measures in Business requirements. */}
+
+### Retrospective
+
+Working from someone else's design moved my product work to the edges the design did not draw: what offline looks like, what an iPhone user sees instead of an install button, what a badge means exactly. Those edges are where a participant decides whether to trust the app.
+
+On the engineering side, deciding what not to make offline kept the project on schedule. Two queued writes and a cached read path covered the daily loop. A full sync engine would have taken the whole timeline.
+
+{/* TODO: rewrite both paragraphs in your own words; they are a first draft
+    from the code and the commit history. */}

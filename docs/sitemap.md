@@ -90,7 +90,7 @@ Each entry gives the page's purpose, its reader, its sections in order, the one 
 
 ### Case study `/work/roomee`, `/work/path90` (existing)
 - **Purpose:** show how I make decisions.
-- **Sections:** follow the case study structure in `docs/brand.md` (the problem, what I built, what it took, where it stands), then prev/next project, then the contact band.
+- **Sections:** follow the seven-section structure in `docs/case-study.md`, then prev/next project, then the contact band.
 - **Primary action:** Start a project, or the next case study.
 - **Data:** MDX, with metadata from `caseStudyMetadata()`.
 

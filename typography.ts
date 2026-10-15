@@ -96,7 +96,17 @@ export default function typographyStyles({ theme }: PluginUtils) {
           marginTop: theme('spacing.16'),
           marginBottom: theme('spacing.4'),
         },
-        ':is(h2, h3) + *': {
+        // Case studies nest one level deeper (Engineering > Implementation >
+        // Key decisions), so h4 reads as a heading rather than body text.
+        h4: {
+          color: 'var(--tw-prose-headings)',
+          fontWeight: theme('fontWeight.semibold'),
+          fontSize: theme('fontSize.base')[0],
+          lineHeight: theme('lineHeight.7'),
+          marginTop: theme('spacing.12'),
+          marginBottom: theme('spacing.4'),
+        },
+        ':is(h2, h3, h4) + *': {
           marginTop: 0,
         },
 

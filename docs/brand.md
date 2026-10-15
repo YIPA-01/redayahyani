@@ -26,7 +26,7 @@ Freelance clients come first, hiring managers second. The site has to work for b
 
 Every claim on the site should trace back to one of these. They come from `src/lib/work/projects.ts` and the case studies.
 
-- **Path90:** built offline-first as a PWA, because people on parole cannot count on a stable connection, a recent phone, or a data plan.
+- **Path90:** a 90-day reentry app for people coming home from prison, plus a case manager dashboard. Built from the client's design as an installable PWA; today's tasks still load and complete with no signal and sync on reconnect.
 - **Roomee:** listing ingestion, search, and matching that pairs students and young professionals in Morocco with places they can actually afford.
 - **The client portal:** every client gets a private dashboard with milestones, documents, messages, and open requests. It is product work in its own right and a sample of how I run projects.
 
@@ -34,7 +34,7 @@ Every claim on the site should trace back to one of these. They come from `src/l
 
 Extends the writing rules in `CLAUDE.md` (no em or en dashes, first person, no hedges).
 
-- **Lead with the person, then the mechanism.** "People on parole keep track of check-ins even without a connection. I built it offline-first" beats "An offline-first PWA for parole tracking."
+- **Lead with the person, then the mechanism.** "People in their first weeks home can still tick off today's tasks with no signal. I built the queue that syncs them later" beats "A PWA with offline mutation support."
 - **Name the decision and why.** Case studies are about choices and tradeoffs, not feature lists.
 - **Plain words.** Write it the way you would say it to a client across a table. No "passionate", no "seamless", no "leveraging".
 - **Writing is a supporting trait.** Articles are framed as notes on the craft. Poetry stays in the footer and on About and is never part of the headline.
@@ -56,12 +56,12 @@ Extends the writing rules in `CLAUDE.md` (no em or en dashes, first person, no h
 | Project | Role | Card copy |
 |---|---|---|
 | Roomee | Personal project · 2024 to present | Students and young professionals in Morocco find rooms they can actually afford. I build it end to end: listing ingestion, search, and matching. |
-| Path90 | Freelance, with Exploda | People on parole keep track of obligations, appointments, and check-ins, even without a connection. I built it offline-first as a PWA. |
+| Path90 | Freelance, with Exploda · 2026 | People coming home from prison follow a 90-day plan, and their case managers see who is falling behind. I built the app and the dashboard from the client's design. |
 | AutoAiConnect | Freelance, with Exploda | A mobile client for conversing with AI agents. Currently unreleased. |
 | GenZ | Solo project | Students map their subjects and interests onto real academic and career paths. |
 
 ### Case study structure
-The problem (who, and what a bad day looks like) / What I built (the decisions) / What it took (the constraint and the option I rejected) / Where it stands (outcome).
+Seven sections: Overview / Business requirements / Understanding the user / Designing / Refining / Engineering (conception, then implementation) / Outcome. The full definition, diagrams, and components live in `docs/case-study.md`.
 
 ### How I work
 This is a real sequence, so it is numbered.

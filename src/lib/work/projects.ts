@@ -50,11 +50,11 @@ export const workProjects: Array<WorkProject> = [
     slug: 'path90',
     name: 'Path90',
     role: 'Freelance engineer, with Exploda',
+    year: '2026',
     description:
-      'A progressive web app that guides people through parole, tracking obligations, appointments, and check-ins so nothing slips. Built offline-first, because the people using it cannot count on a stable connection.',
-    // TODO: confirm stack
-    tagline: 'Offline-first, for people who can’t count on a signal',
-    stack: ['React', 'TypeScript', 'PWA', 'Firestore'],
+      'People coming home from prison get a 90-day plan on their phone: daily tasks, appointments, and money tools, with their case manager able to see who is falling behind. I built the participant app and the case manager dashboard from the client’s design.',
+    tagline: 'The first 90 days home, one day at a time',
+    stack: ['Next.js', 'TypeScript', 'Supabase', 'PWA'],
     cover: coverPath90,
     link: { href: 'https://path90app.com', label: 'path90app.com' },
     builtWith: { name: 'Exploda', logo: logoExploda },

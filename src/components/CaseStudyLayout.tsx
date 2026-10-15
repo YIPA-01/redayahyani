@@ -3,6 +3,10 @@ import Link from 'next/link'
 import { BackButton } from '@/components/BackButton'
 import { Container } from '@/components/Container'
 import { Prose } from '@/components/Prose'
+import {
+  TableOfContentsInline,
+  TableOfContentsRail,
+} from '@/components/case-study/TableOfContents'
 import { CoverImage } from '@/components/work/CoverImage'
 import { getWorkProject } from '@/lib/work/projects'
 
@@ -16,6 +20,8 @@ function LinkIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
     </svg>
   )
 }
+
+const CONTENT_ID = 'case-study-content'
 
 function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -49,8 +55,13 @@ export function CaseStudyLayout({
 
   return (
     <Container className="mt-16 lg:mt-32">
-      <div className="xl:relative">
-        <div className="mx-auto max-w-2xl">
+      {/* From xl there is room for a contents rail beside the 42rem column;
+          below that the contents fold into a disclosure above the MDX. */}
+      <div className="xl:relative xl:grid xl:grid-cols-[12rem_minmax(0,42rem)] xl:justify-center xl:gap-16">
+        <aside className="hidden xl:block">
+          <TableOfContentsRail contentId={CONTENT_ID} />
+        </aside>
+        <div className="mx-auto max-w-2xl xl:mx-0">
           <BackButton label="Go back to work" />
           <article>
             <header className="flex flex-col">
@@ -97,7 +108,15 @@ export function CaseStudyLayout({
               )}
             </dl>
 
-            <Prose className="mt-10" data-mdx-content>
+            <div className="xl:hidden">
+              <TableOfContentsInline contentId={CONTENT_ID} />
+            </div>
+
+            <Prose
+              id={CONTENT_ID}
+              className="mt-10 [&_:is(h2,h3)]:scroll-mt-24"
+              data-mdx-content
+            >
               {children}
             </Prose>
           </article>
