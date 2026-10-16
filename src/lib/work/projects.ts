@@ -74,16 +74,16 @@ export const workProjects: Array<WorkProject> = [
   {
     slug: 'autoaiconnect',
     name: 'AutoAiConnect',
-    role: 'Freelance engineer, with Exploda',
+    role: 'Freelance backend engineer, with Exploda',
+    year: '2026',
     description:
-      'A mobile client for conversing with AI agents, built with Exploda. Currently unreleased.',
-    // TODO: confirm stack
-    tagline: 'A mobile client for talking to AI agents',
-    stack: ['React Native', 'TypeScript'],
+      'Car owners see what their car is worth against what they still owe, and get told when it is a good time to trade up. I built the backend behind the mobile app and the admin portal: the equity engine, payment estimates, a car-aware AI assistant, subscriptions, and daily alerts. Unreleased.',
+    tagline: 'Know when your car is ready to trade',
+    stack: ['Firebase', 'Cloud Functions', 'TypeScript', 'Stripe', 'Next.js'],
     cover: coverAutoAiConnect,
     builtWith: { name: 'Exploda', logo: logoExploda },
     logo: logoAutoAiConnect,
-    caseStudy: false,
+    caseStudy: true,
   },
   {
     slug: 'genz',

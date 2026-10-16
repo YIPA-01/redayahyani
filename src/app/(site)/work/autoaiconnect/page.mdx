@@ -1,0 +1,576 @@
+import { CaseStudyLayout } from '@/components/CaseStudyLayout'
+import {
+  Callout,
+  Decision,
+  FactList,
+  Goal,
+  Overview,
+  OverviewRow,
+  Requirements,
+  Traceability,
+} from '@/components/case-study'
+import { caseStudyMetadata } from '@/lib/work/metadata'
+
+import { AgentTurn } from './diagrams/AgentTurn'
+import { Architecture } from './diagrams/Architecture'
+import { DomainModel } from './diagrams/DomainModel'
+import { ReadinessBadge } from './diagrams/ReadinessBadge'
+import { UseCases } from './diagrams/UseCases'
+
+export const metadata = caseStudyMetadata('autoaiconnect')
+
+export default (props) => <CaseStudyLayout slug="autoaiconnect" {...props} />
+
+{/* Structure: docs/case-study.md, client-design variant, adapted for a
+    backend-only role (sections 3 to 5 become "The product and my part").
+    Every engineering claim comes from ~/autoaiconnect-backend: its code, git
+    history, docs/, and the dated client documents at the repo root. TODO
+    comments mark what only Reda can supply; do not replace them with
+    invented prose. */}
+
+## Overview
+
+<Overview>
+  <OverviewRow label="The product">
+    A mobile app for car owners in the US. It estimates what their car is
+    worth against what they still owe, shows how close they are to a good time
+    to trade, compares the payment on a next car with their own credit and
+    state tax, and has an assistant that answers questions about their car and
+    their numbers. An admin portal runs the catalog of 329 models and 1,265
+    trims behind it.
+  </OverviewRow>
+  <OverviewRow label="The problem">
+    Most people find out what their car is worth on the day they walk into a
+    dealership, which is the worst day to learn they owe more than it is
+    worth. The client wanted owners to see that position months ahead, and to
+    hear when it turns in their favour.
+  </OverviewRow>
+  <OverviewRow label="The goal">
+    <Goal>
+      I know what my car is worth, what I still owe, and the app tells me when
+      it is a good time to trade.
+    </Goal>
+  </OverviewRow>
+  <OverviewRow label="Duration">
+    June to October 2026: from the first commit on 29 June to the last rules
+    fix on 3 October.
+  </OverviewRow>
+  <OverviewRow label="My role">
+    Freelance backend engineer with Exploda. I built the Firebase backend and
+    the Next.js admin portal. The mobile app is Flutter, built by another
+    team, against a contract I wrote and kept up to date.
+  </OverviewRow>
+  <OverviewRow label="Responsibilities">
+    <ul>
+      <li>Firestore data model and security rules, with their test suite</li>
+      <li>The equity engine, payment estimates, APR, and sales tax</li>
+      <li>The preference scoring engine and the AI assistant</li>
+      <li>Stripe subscriptions and plan gates</li>
+      <li>The daily monitoring sweep and push notifications</li>
+      <li>The admin portal, CI, and deploys</li>
+    </ul>
+  </OverviewRow>
+  <OverviewRow label="Team">
+    {/* TODO: the client's name as they want it shown. */}
+    The client, who owned the product and its business rules. Exploda. The
+    Flutter team, who built the app. Mohamed El attar, who added MarketCheck
+    pricing and catalog photos in September.
+  </OverviewRow>
+</Overview>
+
+## Business requirements
+
+The brief arrived as an integration guide and a package spreadsheet. The rules that shaped the numbers came later, in two documents the client sent on 27 and 30 July in reply to a write-up of the calculation logic.
+
+{/* TODO: confirm the integration guide was the client's brief, and who wrote
+    the calculation write-up the client replied to. */} Most of the requirements below come from those two documents, and everything later on this page points back to their IDs.
+
+<FactList
+  groups={[
+    {
+      title: 'Business goals',
+      items: [
+        'Generate qualified leads for dealerships by matching owners to their next car.',
+        'Earn subscription revenue from the assistant and the recommendations.',
+        'Educate owners with honest estimates, never promise a trade value or a payment.',
+      ],
+    },
+    {
+      title: 'Stakeholders',
+      items: [
+        'Car owners, financing or leasing a car they may want to replace.',
+        'Dealerships, who receive the leads.',
+        'The client, who owns the catalog data and the business rules.',
+        'The Flutter team, who code against the backend contract.',
+      ],
+    },
+  ]}
+/>
+
+{/* TODO: success metrics and targets (signups, conversion to a paid plan,
+    leads sent), if the client set any. Section 7 reports against them. */}
+
+<FactList
+  groups={[
+    {
+      title: 'Constraints',
+      items: [
+        'Firebase only: the app calls Firestore and Cloud Functions directly, with no REST layer.',
+        'Every figure is a disclosed estimate, so the copy and the data both carry the disclaimer.',
+        'No free source of trim-level prices exists, so the catalog started unpriced.',
+        'Sign in with Apple is required for the App Store.',
+        'Built and tested against the emulators, because the app team needed the contract before production existed.',
+      ],
+    },
+    {
+      title: 'Scope',
+      items: [
+        'In: the backend, the Firestore rules, the admin portal, and the contract docs for the app team.',
+        'Out: the Flutter app and its design, and the landing page.',
+      ],
+    },
+  ]}
+/>
+
+<Requirements
+  items={[
+    {
+      id: 'R1',
+      text: 'Every trade value, equity figure, and payment is labelled an estimate, never a quote.',
+      refs: 'Client feedback, 27 July: core philosophy',
+      priority: 'must',
+    },
+    {
+      id: 'R2',
+      text: 'Trade value accounts for age, mileage, and condition, with mileage scaled to the car’s value rather than a flat dollar amount.',
+      refs: 'Client feedback, 27 July',
+      priority: 'must',
+    },
+    {
+      id: 'R3',
+      text: 'Five condition levels: Excellent, Very Good, Good, Fair, Poor.',
+      refs: 'Client feedback, 27 July',
+      priority: 'should',
+    },
+    {
+      id: 'R4',
+      text: 'The interest rate comes from a credit profile or a rate the owner enters, never one hardcoded APR.',
+      refs: 'Client feedback, 27 July',
+      priority: 'must',
+    },
+    {
+      id: 'R5',
+      text: 'Sales tax comes from the owner’s ZIP code and their state’s rules.',
+      refs: 'Client feedback, 27 July',
+      priority: 'must',
+    },
+    {
+      id: 'R6',
+      text: 'The down payment can be cash, trade equity, or both.',
+      refs: 'Client feedback, 27 July',
+      priority: 'should',
+    },
+    {
+      id: 'R7',
+      text: 'Trade value is shown as a range with a High, Medium, or Low confidence level.',
+      refs: 'Client feedback, 27 July',
+      priority: 'should',
+    },
+    {
+      id: 'R8',
+      text: 'Every trim has a permanent ID, and the spreadsheet is an import tool, not the database.',
+      refs: 'Client specification, 30 July',
+      priority: 'must',
+    },
+    {
+      id: 'R9',
+      text: 'Each estimate keeps its inputs, outputs, source, and disclaimer.',
+      refs: 'Client specification, 30 July',
+      priority: 'must',
+    },
+    {
+      id: 'R10',
+      text: 'The app watches each car and tells the owner when it may be a good time to shop.',
+      refs: 'Client feedback, 27 July; upgrade_alerts, 30 July',
+      priority: 'must',
+    },
+    {
+      id: 'R11',
+      text: 'An assistant that knows the owner’s car, equity, and preferences, on paid plans only.',
+      refs: 'Integration guide',
+      priority: 'must',
+    },
+    {
+      id: 'R12',
+      text: 'Free, Basic, and Premium plans, billed through Stripe.',
+      refs: 'Integration guide',
+      priority: 'must',
+    },
+    {
+      id: 'R13',
+      text: 'An admin can manage the catalog, users, and plans without touching the database.',
+      refs: 'Added in August, during the build',
+      priority: 'should',
+    },
+  ]}
+/>
+
+{/* TODO: confirm the priorities. The client did not rank these; they are my
+    reading of what blocked the launch and what did not. */}
+
+## The product and my part
+
+<Callout label="The client’s work and mine">
+  The product, its business rules, and the app’s design were the client’s,
+  and the Flutter app was built by another team. My part was everything the
+  app talks to: the data, the rules that guard it, the functions that compute
+  every number, the integrations, and the portal the client uses to run it.
+</Callout>
+
+The app is built around one number, equity: what the car is worth minus what is still owed. Around it sit a readiness badge, a garage of the owner's cars, a preference quiz on ten dimensions that ranks twelve package families, a catalog to browse and save from, a payment comparison against any catalog car, and the assistant.
+
+{/* TODO: one figure of the real app screens (dashboard with the badge, and
+    the comparison screen). Nothing in the backend repo shows them. */}
+
+A spec describes what the numbers are. Building it meant deciding what happens when a number cannot be honest:
+
+- **A car with nothing to value from.** An owner who has paid off their car, and whose model is not in the catalog, gives the engine nothing to start from. The snapshot stores `null` with `determinable: false`, not $0, and the app shows "We can't estimate your car's value yet" and hides the badge.
+- **A trade-in worth more than the next car.** The comparison used to show a $0 payment. It now says the trade-in covers the car and shows what is left over.
+- **A wrong spreadsheet.** An upload that would remove more than a quarter of the live catalog stops and asks for confirmation, so a truncated file cannot silently wipe models.
+- **The launch offer.** The first 500 registrations get Premium free. A server-side counter numbers every real signup, so the offer cannot be claimed twice or from the app.
+
+{/* TODO: confirm which of these were your calls and which the client asked
+    for. The repo shows who built them, not who decided them. */}
+
+## Engineering
+
+The app makes two promises the backend has to keep: every number an owner sees is the honest best estimate from what the app knows, and an alert means something actually changed. Most of the engineering serves those two.
+
+### Conception
+
+I modelled the system before building it, and kept the models in the repo as the contract with the app team.
+
+<UseCases />
+
+Two collections are append-only, and that one choice carries much of the client's auditability ask (R9). A car's value history is simply its documents.
+
+<DomainModel />
+
+The badge is the product's main signal, so its rules are a single pure function with its own tests.
+
+<ReadinessBadge />
+
+The assistant is the one place where a third party sits inside a user's request, so its turn is drawn out step by step.
+
+<AgentTurn />
+
+### Implementation
+
+<Architecture />
+
+#### Key decisions
+
+<Decision
+  id="D1"
+  refs="R9, R11, R12"
+  title="Callables and direct streams, no REST layer"
+  context="The app team works in Flutter with the FlutterFire SDK, and needed a stable contract early. The backend had to serve live screens (the equity dashboard, the chat history, the inbox) and heavy calculations."
+  options={[
+    {
+      name: 'A REST API in front of Firestore',
+      note: 'One place to check everything, but every screen loses live updates and the app team waits on an extra service.',
+    },
+    {
+      name: 'Client writes for everything',
+      note: 'Fastest for the app, and it puts the money math and the plan gates on a device the user controls.',
+    },
+    {
+      name: 'Streams for reading, callables for computing',
+      note: 'The app reads its own documents live under the rules, and anything that computes or costs money goes through a callable that reads identity from the token.',
+      chosen: true,
+    },
+  ]}
+  consequences="The rules became the API for reads, so they got their own suite of 87 tests. Every callable ignores a uid in its payload and treats one as a red flag. The contract lives in one table that both teams code against, and every change to it ships with a note for the app team."
+/>
+
+<Decision
+  id="D2"
+  refs="R11, R12"
+  title="Only the server writes chat history"
+  context="Basic plans get 20 assistant replies a day. A limit counted from documents the app can write is a limit the app can lie about."
+  options={[
+    {
+      name: 'The app writes the user’s message, the server writes the reply',
+      note: 'Natural for a chat screen, and it leaves half an exchange in history whenever a call fails.',
+    },
+    {
+      name: 'The server writes both, in one batch',
+      note: 'The rules deny every client write to chat_messages. The count of today’s server-written replies is the rate limit, and each pair carries server-stamped metadata: the equity at the time and the tools used.',
+      chosen: true,
+    },
+  ]}
+  consequences="It caught a real bug. A Premium account kept seeing “Upgrade to Basic or Premium”. The app was still writing the message itself, the rules refused it, and the app relabelled the refusal as a plan error. Production logs showed zero calls to the assistant for that user, which pointed straight at the app. I wrote the fix up for the app team. The backend did not change."
+/>
+
+<Decision
+  id="D3"
+  refs="R11"
+  title="One model interface, three implementations"
+  context="The client specified GPT-4.1. Testing ran on Gemini for a while, and the emulators have no outbound network at all."
+  options={[
+    {
+      name: 'Call the OpenAI SDK directly',
+      note: 'Least code, and every test then needs a network and a key.',
+    },
+    {
+      name: 'A small client interface',
+      note: 'Gemini, OpenAI, and a deterministic mock that picks a tool by keyword and streams its answer in two chunks, so the streaming path is exercised in every test.',
+      chosen: true,
+    },
+  ]}
+  consequences="The agent turn is tested without a model. A production deploy with no key throws instead of quietly falling back to the mock. Tool schemas are written once and converted for Gemini, which rejects some JSON Schema keys."
+/>
+
+<Decision
+  id="D4"
+  refs="R2, R9"
+  title="Live prices behind a switch, not a migration"
+  context="In September the client wanted real market prices from MarketCheck. Mohamed El attar built the integration; the shape of the switch was the decision that mattered for the engine."
+  options={[
+    {
+      name: 'Replace the formula',
+      note: 'Simplest, and every failure, timeout, or missing ZIP then leaves an owner with no number.',
+    },
+    {
+      name: 'A runtime flag with the formula as the fallback',
+      note: 'app_config/pricing decides the source. Any error, empty result, or missing ZIP falls back to the formula, and the snapshot records which one produced the number.',
+      chosen: true,
+    },
+  ]}
+  consequences="value_source is legacy, marketcheck, or legacy_fallback, so a fallback never masquerades as the switch being off. The 7-day price cache stores only market data, and the owner’s condition is applied after it. A first version cached the adjusted price, which leaked one owner’s condition into another’s estimate; Mohamed caught and fixed it on 17 September."
+/>
+
+#### Physical data model
+
+The domain model became seventeen collections. What changed on the way: versions became append-only documents grouped by `car_id`, a relation became a pinned document id (a favorite is `{uid}__{catalog_car_id}`, so the rules can check ownership from the path), and trims became a `configurations` subcollection with permanent random IDs (R8). The display name is stored as a lookup field and is never the key, because manufacturers reuse names. Six collections deny every client read and write: push tokens, Stripe customers, the sweep's memory, runtime config, the price cache, and the signup counter.
+
+The rule that made `chat_messages` safe (D2) is short:
+
+```js
+match /chat_messages/{docId} {
+  allow read: if isOwner(resource.data.uid);
+  allow write: if false;
+}
+```
+
+#### Deep dive: the equity engine
+
+The engine answers one question: is the car worth more than what is owed, and is it time to trade?
+
+```
+equity = trade_value − payoff_balance
+badge  = ready | almost_ready | not_yet
+```
+
+The second line is the easy part. The hard part is the first term, because there was no honest source for it. Edmunds' public API is shut down, the trim-level sources that do exist are paid, NHTSA's data has no prices, and the one open dataset I found was synthetic. An LLM would have invented both the number and its source, which is not acceptable for a financial figure. So I split the problem in two. Everything that consumes a trade value (equity, the badge, the snapshot, the comparison, the alerts) is final code. Only the number itself is provisional, behind one function with a fixed signature:
+
+```ts
+export function computeTradeValue(
+  profile: CarProfile,
+  catalogMsrp?: number | null,
+  nowYear: number = new Date().getFullYear()
+): TradeValueResult {
+  // Base: the catalog MSRP, or down payment + monthly payment × term.
+  // Neither: return trade_value null, determinable false. Never $0.
+  const age = Math.max(0, nowYear - profile.year)
+  const ageFactor = Math.pow(1 - ANNUAL_DEPRECIATION, age)
+  const mileageFactor = computeMileageFactor(profile, age)
+  const tradeValue = Math.max(
+    0,
+    base * ageFactor * conditionMultiplier * mileageFactor
+  )
+  return {
+    trade_value: round2(tradeValue),
+    determinable: true,
+    depreciation_curve_used: curve, // which base, versioned
+    condition_multiplier: conditionMultiplier,
+    mileage_factor: round2(mileageFactor),
+    disclaimer: DISCLOSURES.estimatedValue,
+  }
+}
+```
+
+Mileage is a multiplier, not a dollar amount: the odometer is judged against 12,000 miles a year for the car's age and clamped between 0.6 and 1.05, so a luxury car and an economy car lose the same share, not the same dollars (R2). The disclaimer is set here, inside the result, so no consumer can show the number without it (R1). Payoff and months left are entered once and then aged on every read from the date the terms were entered, so a badge climbs on its own as a loan runs down, with no monthly job.
+
+On 27 July the client pushed back on the rules: no fixed depreciation percentages, no flat mileage deduction, five condition levels, credit-based APR, ZIP-based tax, a value range with a confidence level. Before writing any code I mapped every point against what the engine actually did, smallest gap first. Mileage already matched. The flat curve met the client's own bar for version 1 ("an internal estimation model with a clear disclaimer"). The real work was the payment side, which had a hardcoded 7.5% rate and no tax at all.
+
+{/* TODO: the client's note cites fixed rates of 20% and 12% and a flat $150
+    per 1,000 miles, but the code used a flat 15% a year and a percentage
+    mileage factor. Say where those figures came from (an earlier write-up?),
+    or cut this comment. */}
+
+So that is what shipped first, on 1 August. A credit profile picks the rate (5.5% Excellent, 7% Good, 9.5% Average, 13.5% Building), a custom rate overrides it, then the rate saved on the account, and only then the old default (R4). Sales tax comes from a 50-state table the client supplied, including the states that tax the full price with no trade-in credit and Michigan's partial credit (R5). Four days later a review found the app saved a ZIP code but never a state, so the tax was reaching nobody. The backend now derives the state from the ZIP, and an unknown state adds no tax and says so, rather than guessing a national average.
+
+The numbers that justify the approach: 353 unit tests run in under a second, because every rule above is a pure function with no Firestore and no clock. That is what made it cheap to rework the payment rules after the July feedback without breaking the contract with the app team.
+
+What the engine still does not do is on this page as misses: one trade value, not a range with a confidence level (R7), the old condition labels (R3), and no cash or combined down payment (R6).
+
+#### Alerts that mean something
+
+The other half of R10 runs while nobody has the app open. Once a day a scheduled sweep recomputes every car and compares it with what it knew yesterday. The evaluator is pure, and built on two rules: an alert fires on a change, never on a condition that is still true, and an alert held back by a limit is kept for the next day rather than lost. Three kinds exist: the badge moved up, a payment milestone was reached, or equity moved by at least $500 and at least 5%. Both, because 5% of $200 is noise and $500 on a $250,000 car is noise. A car's first sweep is silent, so launch day cannot send everyone a burst of alerts, and no owner gets more than one alert per car per day or three a week.
+
+#### Quality attributes
+
+<FactList
+  groups={[
+    {
+      title: 'Reliability',
+      items: [
+        'Live prices fall back to the formula on any error, timeout, or missing ZIP, and the snapshot says which ran.',
+        'A catalog upload that would deactivate more than 25% of models is refused unless confirmed.',
+        'An unrecognised stored condition defaults to the middle value with a warning, instead of crashing the snapshot write.',
+      ],
+    },
+    {
+      title: 'Security and privacy',
+      items: [
+        'Identity comes only from the ID token; a uid in a payload is ignored.',
+        'Role and plan are read on the server, never from the client.',
+        'Six collections deny all client access, owner included.',
+        'Location is a coarse state and ZIP, and API keys live in Secret Manager.',
+      ],
+    },
+    {
+      title: 'Cost',
+      items: [
+        'The assistant runs with no warm instances during integration; the launch setting is one, for Basic and Premium latency.',
+        'Market prices are cached for 7 days per year, make, model, trim, ZIP, and mileage band.',
+      ],
+    },
+    {
+      title: 'Known gaps',
+      items: [
+        'The admin portal has no automated tests, and CI does not build it.',
+        'Snapshots store the factors behind each estimate, not every input (R9 is partly met).',
+        'Tax is state-level only: city, county, title, and dealer fees are disclosed as excluded.',
+      ],
+    },
+  ]}
+/>
+
+#### Testing and delivery
+
+Every rule that decides a number or an alert is a pure module with unit tests: 353 of them, all passing as of this writing. On top of that, an emulator suite runs every function against real Auth and Firestore emulators, three integration scripts cover the catalog upload and the Stripe webhook, and 87 rules tests pin who can read and write what. GitHub Actions runs the build, lint, and unit tests, then the emulator suites, on every push to main and every pull request. Smoke scripts check the live project after a deploy, including one that validates a push without delivering it. The admin portal deploys to Firebase App Hosting.
+
+#### Traceability
+
+<Traceability
+  rows={[
+    {
+      req: 'R1',
+      design: '“Estimated value only” wherever a figure shows',
+      implementation: 'Disclaimer set inside computeTradeValue, carried on every snapshot',
+      verified: 'service.test.mjs',
+    },
+    {
+      req: 'R2',
+      design: 'Mileage popup, condition picker',
+      implementation: 'Percentage mileage factor against 12,000 miles a year',
+      verified: 'tradeValue.test.mjs',
+    },
+    {
+      req: 'R3',
+      design: 'Five condition levels',
+      implementation: 'Not built: the enum is still excellent to worst',
+      verified: 'Missed',
+    },
+    {
+      req: 'R4',
+      design: 'Credit profile picker, custom rate',
+      implementation: 'Rate resolution in finance/logic/apr.ts',
+      verified: 'apr.test.mjs, compareLiveSmoke',
+    },
+    {
+      req: 'R5',
+      design: 'Tax line on the comparison',
+      implementation: '50-state table, state derived from ZIP',
+      verified: 'salesTax.test.mjs, zipState.test.mjs',
+    },
+    {
+      req: 'R6',
+      design: 'Cash, trade, or both',
+      implementation: 'Not built: positive equity is the only down payment',
+      verified: 'Missed',
+    },
+    {
+      req: 'R7',
+      design: 'Value range with confidence',
+      implementation: 'Not built: one point estimate',
+      verified: 'Missed',
+    },
+    {
+      req: 'R8',
+      design: 'Trim spreadsheet upload',
+      implementation: 'configurations subcollection, permanent random IDs',
+      verified: 'vehicleId.test.mjs, catalogTrimUpload integration',
+    },
+    {
+      req: 'R9',
+      design: 'Value history',
+      implementation: 'Append-only snapshots with curve, factors, source, disclaimer',
+      verified: 'Rules tests deny client writes; partly met',
+    },
+    {
+      req: 'R10',
+      design: 'Notifications inbox, push',
+      implementation: 'Daily sweep, pure evaluator, FCM',
+      verified: 'notificationsEvaluate.test.mjs, notifications emulator tests',
+    },
+    {
+      req: 'R11',
+      design: 'Chat screen',
+      implementation: 'D2, D3: single-turn agent, 6 tools, streamed',
+      verified: 'aiAgentTurn.test.mjs, ai emulator tests',
+    },
+    {
+      req: 'R12',
+      design: 'Plans screen, external checkout',
+      implementation: 'Stripe Checkout, Billing Portal, webhook sync',
+      verified: 'subscriptionsSync integration, stripeLiveSmoke',
+    },
+    {
+      req: 'R13',
+      design: 'Admin portal',
+      implementation: 'Next.js on App Hosting, admin claim checked on the server',
+      verified: 'Manual check',
+    },
+  ]}
+/>
+
+## Outcome
+
+The backend runs on the client's production Firebase project, and the admin portal went live on 7 August. The app itself is unreleased. Against the requirements: R3, R6, and R7 are missed, R5 and R9 are partly met (state tax only, and factors rather than every input), and the rest are met.
+
+{/* TODO: impact once the app launches. Until then, the client's own words
+    are the only real signal: their 30 July note says the write-up showed
+    "you're thinking about the calculation engine and not just the
+    interface, which is exactly what I want." Confirm it can be quoted, and
+    report any success metrics from Business requirements here as met or
+    missed. */}
+
+### Retrospective
+
+Working on the backend only, my product work happened in the numbers. Every rule the client sent back was about trust: a range instead of a figure, a disclaimer on everything, no promise of a payment. The calls I am happiest with are the small honest ones, like showing "we can't estimate this yet" instead of $0.
+
+On the engineering side, splitting the provisional number from the final code around it is what let the payment rules change late in the build without breaking the app. The miss is that I did that for the trade value but not for the shape of the answer: a range with a confidence level is a contract change for the app team, and it is still waiting.
+
+{/* TODO: rewrite both paragraphs in your own words; they are a first draft
+    from the code and the commit history. */}
+
+### Next steps
+
+| Next step | Why |
+| --- | --- |
+| A value range with a confidence level, and the five condition labels | R7 and R3, missed. Both change the app contract, so they ship together. |
+| Cash and combined down payments | R6, missed. |
+| One warm instance for the assistant at launch | Integration runs with none to avoid idle billing; launch latency needs it. |
