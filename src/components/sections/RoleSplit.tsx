@@ -43,11 +43,11 @@ function List({
   return (
     <div>
       <Redline>
-        <h2 className="mb-5 text-[clamp(1.75rem,3.6vw,2.75rem)] font-light leading-[1.1] tracking-[-0.01em]">
+        <h2 className="mb-4 text-[clamp(1.375rem,3.6vw,2.75rem)] font-light leading-[1.1] tracking-[-0.01em]">
           {title}
         </h2>
       </Redline>
-      <ul className="grid gap-2.5 text-muted">
+      <ul className="grid gap-2 text-sm text-muted sm:gap-2.5 sm:text-base">
         {items.map((item, index) => (
           <li
             key={item}
@@ -68,11 +68,11 @@ const sweep =
 
 export function RoleSplit() {
   return (
-    <InView className="grid grid-cols-1 items-center gap-10 py-4 min-[440px]:grid-cols-2 lg:grid-cols-[1fr_minmax(0,20rem)_1fr] lg:gap-16 lg:py-12">
+    <InView className="grid grid-cols-2 items-start gap-x-6 gap-y-8 py-4 sm:gap-10 lg:grid-cols-[1fr_minmax(0,20rem)_1fr] lg:items-center lg:gap-16 lg:py-12">
       <div className="lg:justify-self-end">
         <List title="Part designer" items={designer} delay={250} />
       </div>
-      <div className="group order-first mx-auto w-full max-w-[18rem] min-[440px]:col-span-2 lg:order-none lg:col-span-1 lg:max-w-none">
+      <div className="group order-first col-span-2 mx-auto w-full max-w-[13rem] sm:max-w-[18rem] lg:order-none lg:col-span-1 lg:max-w-none">
         <svg
           viewBox="0 0 300 300"
           role="img"

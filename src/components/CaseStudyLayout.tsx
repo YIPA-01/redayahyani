@@ -5,7 +5,7 @@ import { BackButton } from '@/components/BackButton'
 import { Container } from '@/components/Container'
 import { Prose } from '@/components/Prose'
 import {
-  TableOfContentsInline,
+  TableOfContentsFloating,
   TableOfContentsRail,
 } from '@/components/case-study/TableOfContents'
 import { CoverImage } from '@/components/work/CoverImage'
@@ -58,7 +58,7 @@ export function CaseStudyLayout({
   return (
     <Container className="mt-16 lg:mt-32">
       {/* From xl there is room for a contents rail beside the 42rem column;
-          below that the contents fold into a disclosure above the MDX. */}
+          below that they float as a button in the bottom-right corner. */}
       <div className="xl:relative xl:grid xl:grid-cols-[12rem_minmax(0,42rem)] xl:justify-center xl:gap-16">
         <aside className="hidden xl:block">
           <TableOfContentsRail contentId={CONTENT_ID} />
@@ -126,7 +126,7 @@ export function CaseStudyLayout({
             </dl>
 
             <div className="xl:hidden">
-              <TableOfContentsInline contentId={CONTENT_ID} />
+              <TableOfContentsFloating contentId={CONTENT_ID} />
             </div>
 
             <Prose

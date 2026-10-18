@@ -58,32 +58,63 @@ function Entries({ entries }: { entries: Array<CvEntry> }) {
   ))
 }
 
+const cv = [
+  { title: 'Education', content: <Entries entries={education} /> },
+  { title: 'Experience', content: <Entries entries={experience} /> },
+  {
+    title: 'Skills',
+    content: skills.map((group) => (
+      <div key={group[0]}>
+        {group.map((skill) => (
+          <div key={skill}>{skill}</div>
+        ))}
+      </div>
+    )),
+  },
+  { title: 'Certifications', content: <Entries entries={certifications} /> },
+]
+
+function ChevronDownIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M4.75 6.75 8 10l3.25-3.25"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function Footer() {
   return (
-    <footer className="mt-24 flex-none sm:mt-32">
+    <footer className="mt-16 flex-none sm:mt-32">
       <Container>
-        <div className="grid grid-cols-1 gap-x-8 gap-y-10 border-t border-line pt-10 min-[480px]:grid-cols-2 lg:grid-cols-4">
-          <Column title="Education">
-            <Entries entries={education} />
-          </Column>
-          <Column title="Experience">
-            <Entries entries={experience} />
-          </Column>
-          <Column title="Skills">
-            {skills.map((group) => (
-              <div key={group[0]}>
-                {group.map((skill) => (
-                  <div key={skill}>{skill}</div>
-                ))}
+        {/* Phones get the CV as four closed disclosures so it doesn't add
+            two screens to every page; from lg it lies open in four columns. */}
+        <div className="border-t border-line lg:hidden">
+          {cv.map(({ title, content }) => (
+            <details key={title} className="group border-b border-line">
+              <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between text-[1.0625rem] font-medium text-ink [&::-webkit-details-marker]:hidden">
+                {title}
+                <ChevronDownIcon className="h-4 w-4 stroke-muted transition group-open:rotate-180 motion-reduce:transition-none" />
+              </summary>
+              <div className="grid gap-[1.125rem] pb-6 text-[0.9375rem] leading-normal text-muted">
+                {content}
               </div>
-            ))}
-          </Column>
-          <Column title="Certifications">
-            <Entries entries={certifications} />
-          </Column>
+            </details>
+          ))}
+        </div>
+        <div className="hidden grid-cols-4 gap-x-8 border-t border-line pt-10 lg:grid">
+          {cv.map(({ title, content }) => (
+            <Column key={title} title={title}>
+              {content}
+            </Column>
+          ))}
         </div>
 
-        <div className="mt-14 flex flex-wrap items-center justify-between gap-x-8 gap-y-5 pb-10 text-sm text-muted">
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-x-8 gap-y-5 pb-10 text-sm text-muted lg:mt-14">
           <div className="flex gap-3.5">
             {socials.map(({ href, label, icon: Icon }) => (
               <Link

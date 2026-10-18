@@ -152,7 +152,7 @@ Planned for `src/components/case-study/`, exported from one `index.ts`, and impo
 | `Diagram`, `Decision`, `Code`, `Traceability` | 6 |
 | `Metrics`, `NextSteps` | 7 |
 
-Navigation is automatic: `CaseStudyLayout` renders a contents list from the page's h2 and h3 headings (`src/components/case-study/TableOfContents.tsx`), as a sticky rail from `xl` and a collapsible "On this page" below that. Heading ids come from `rehype-slug`, so section titles double as deep links (`/work/path90#engineering`). Keep h2 and h3 titles short, since they are the menu; use h4 for anything that should stay out of it.
+Navigation is automatic: `CaseStudyLayout` renders a contents list from the page's h2 and h3 headings (`src/components/case-study/TableOfContents.tsx`), as a sticky rail from `xl` and, below that, a floating button in the bottom-right corner that opens the same list and shows reading progress. Heading ids come from `rehype-slug`, so section titles double as deep links (`/work/path90#engineering`). Keep h2 and h3 titles short, since they are the menu; use h4 for anything that should stay out of it.
 
 Built so far (with Path90 and Roomee): `Overview` (with `OverviewRow` and `Goal`), `Requirements`, `FactList`, `Decision`, `Traceability`, `Figure`, `Callout`, `Diagram`, `PainPoints`, `Comparison` (a design reference next to the component it shaped, with what was kept and what changed), and `Video` (a walkthrough with a poster; it never autoplays, and files live in `public/work/<slug>/`). Still planned, to build with the first case study that has the material: `Persona`, `JourneyMap`, `Flow`, `AnnotatedFigure`, `StudyRound`, `BeforeAfter`, `Considerations`, `Metrics`, `NextSteps`. Until then, plain Markdown (tables, lists) covers metrics and next steps.
 

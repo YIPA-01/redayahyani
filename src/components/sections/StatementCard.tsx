@@ -21,7 +21,7 @@ export function StatementCard({
     <div
       data-morph-card
       className={clsx(
-        'relative isolate overflow-hidden rounded-[clamp(24px,4vw,40px)] border border-coral/60 px-5 py-16 sm:px-16 sm:py-28 lg:px-24 lg:py-36',
+        'relative isolate overflow-hidden rounded-[clamp(24px,4vw,40px)] border border-coral/60 px-5 py-12 sm:px-16 sm:py-28 lg:px-24 lg:py-36',
         className,
       )}
     >

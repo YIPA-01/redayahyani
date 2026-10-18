@@ -63,12 +63,15 @@ function href(project: WorkProject) {
 
 // Home's project row: the cover in a soft tinted frame with a pill label
 // underneath. The first card leans slightly, the way the reference did, and
-// straightens on hover.
+// straightens on hover. Below lg the row swipes sideways with the next card
+// peeking in, so three stacked covers don't take three screens on a phone.
+// The vertical padding leaves room for the tilt and the hover lift, which the
+// scroll container would otherwise clip.
 export function ProjectCards({ projects }: { projects: Array<WorkProject> }) {
   return (
     <ul
       role="list"
-      className="mx-auto grid max-w-xl grid-cols-1 gap-4 lg:max-w-none lg:grid-cols-3"
+      className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-6 pt-3 [scrollbar-width:none] max-sm:-mx-4 max-sm:scroll-px-4 max-sm:px-4 lg:grid lg:snap-none lg:grid-cols-3 lg:overflow-visible lg:p-0 [&::-webkit-scrollbar]:hidden"
     >
       {projects.map((project, index) => {
         let target = href(project)
@@ -118,7 +121,10 @@ export function ProjectCards({ projects }: { projects: Array<WorkProject> }) {
         )
 
         return (
-          <li key={project.slug}>
+          <li
+            key={project.slug}
+            className="w-[82%] shrink-0 snap-center sm:w-[60%] lg:w-auto"
+          >
             {target ? (
               <Link
                 href={target}
