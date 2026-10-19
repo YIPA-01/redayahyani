@@ -104,6 +104,13 @@ export default function About() {
               >
                 here
               </Link>
+              . The books I keep coming back to are in the{' '}
+              <Link
+                href="/library"
+                className="font-medium text-coral-text transition hover:text-accent-600 dark:hover:text-accent-400"
+              >
+                library
+              </Link>
               .
             </p>
           </div>

@@ -20,6 +20,7 @@ const links = [
   { href: '/articles', label: 'Articles' },
   { href: '/about', label: 'About' },
   { href: '/writing', label: 'Writing' },
+  { href: '/library', label: 'Library' },
   { href: '/accessibility', label: 'Accessibility' },
   { href: '/portal/sign-in', label: 'Client portal' },
 ]
