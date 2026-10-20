@@ -10,14 +10,25 @@ import { Flip } from 'gsap/Flip'
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 
 import { R_PATH, variants } from '@/components/Signature'
+import { motionLevel } from '@/lib/a11y/preferences'
 import { useDisplay } from '@/lib/a11y/useDisplay'
 
-// The phone menu. The signature is the trigger: every 3 s its Y re-signs
-// itself, and on tap the two strokes morph into a close mark (R to the rising
-// bar, Y to the falling one). The sections arrive as stacked cards that fly
-// out of the mark with Flip and fold back into it, on a solid white (or
-// black) page. Under reduced or no motion there is no idle loop, the mark
-// swaps instantly, and the cards just appear.
+// The phone menu. The trigger starts as the signature, holds for a second so
+// the brand reads first, then writes itself off: the R and Y erase in the
+// direction they were drawn while two left-aligned menu lines draw in, so the
+// mark is recognisable as a menu. After 12 s untouched it writes back into the
+// signature, holds, and writes off again. On tap the two lines morph into a
+// close mark. The sections arrive as stacked cards that fly out of the mark
+// with Flip and fold back into it, on a solid white (or black) page.
+//
+// Motion: at full, all of the above. Reduced stops anything that moves on its
+// own, so there is no intro or idle return: the mark is the menu icon at once,
+// and a tap swaps to the close mark with a short fade. Off swaps instantly,
+// and the cards just appear below full.
+//
+// The strokes all carry pathLength 1 and a "1 2" dash, so a dash offset of 0
+// is fully drawn, -1.01 is erased from the pen's start, and 1.01 is not yet
+// drawn.
 //
 // State model: `open` is the single source of truth. It decides the mark's
 // shape (one effect drives the morph), the cards' layout, and the labels.
@@ -35,8 +46,17 @@ export interface MenuCounts {
 }
 
 const Y_PATH = variants.compact.y
-const CLOSE_R = 'M200 560C290 470 380 380 520 240'
-const CLOSE_Y = 'M200 240 360 400 520 560'
+// The case study contents icon's two lines, left-aligned and centred in the
+// mark's viewBox.
+const MENU_TOP = 'M150 290 570 290'
+const MENU_BOTTOM = 'M150 450 400 450'
+const CLOSE_TOP = 'M200 530C290 440 380 350 520 210'
+const CLOSE_BOTTOM = 'M200 210 360 370 520 530'
+const DRAWN = 0
+const ERASED = -1.01
+const UNDRAWN = 1.01
+const HOLD = 1
+const IDLE_WAIT = 12
 const MENU_ID = 'mobile-menu'
 const DESKTOP = '(min-width: 768px)'
 const CARD_PROPS =
@@ -47,6 +67,75 @@ function register() {
   if (registered) return
   gsap.registerPlugin(Flip, MorphSVGPlugin)
   registered = true
+}
+
+type Strokes = Array<SVGPathElement | null>
+
+// Built ahead of time inside timelines, so no tween may paint its starting
+// value early.
+function dash(
+  tl: gsap.core.Timeline,
+  targets: Strokes,
+  from: number,
+  to: number,
+  vars: gsap.TweenVars,
+  at: number,
+) {
+  tl.fromTo(
+    targets,
+    { attr: { 'stroke-dashoffset': from } },
+    { attr: { 'stroke-dashoffset': to }, immediateRender: false, ...vars },
+    at,
+  )
+}
+
+function writeOff(
+  tl: gsap.core.Timeline,
+  [r, y, top, bottom]: Strokes,
+  at: number,
+) {
+  dash(tl, [r], DRAWN, ERASED, { duration: 0.7, ease: 'power2.in' }, at)
+  dash(tl, [y], DRAWN, ERASED, { duration: 0.5, ease: 'power2.in' }, at + 0.1)
+  dash(
+    tl,
+    [top],
+    UNDRAWN,
+    DRAWN,
+    { duration: 0.6, ease: 'power3.out' },
+    at + 0.42,
+  )
+  dash(
+    tl,
+    [bottom],
+    UNDRAWN,
+    DRAWN,
+    { duration: 0.5, ease: 'power3.out' },
+    at + 0.55,
+  )
+}
+
+function writeBack(
+  tl: gsap.core.Timeline,
+  [r, y, top, bottom]: Strokes,
+  at: number,
+) {
+  dash(tl, [top], DRAWN, ERASED, { duration: 0.45, ease: 'power2.in' }, at)
+  dash(
+    tl,
+    [bottom],
+    DRAWN,
+    ERASED,
+    { duration: 0.4, ease: 'power2.in' },
+    at + 0.05,
+  )
+  dash(tl, [r], UNDRAWN, DRAWN, { duration: 0.7, ease: 'power3.out' }, at + 0.3)
+  dash(tl, [y], UNDRAWN, DRAWN, { duration: 0.5, ease: 'power3.out' }, at + 0.6)
+}
+
+// The resting menu icon, whatever the intro or idle return was doing.
+function showMenu([r, y, top, bottom]: Strokes) {
+  gsap.set([r, y], { attr: { 'stroke-dashoffset': ERASED } })
+  gsap.set([top, bottom], { attr: { 'stroke-dashoffset': DRAWN } })
 }
 
 function isCurrent(pathname: string, href: string) {
@@ -69,6 +158,8 @@ export function MobileMenu({
   // Hovered or focused: the idle stays still while the mark is about to be
   // pressed.
   let [held, setHeld] = useState(false)
+  // The intro has finished (or was skipped), so the idle return may start.
+  let [settled, setSettled] = useState(false)
   // The portal needs document.body, so the overlay mounts after hydration.
   let [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -77,6 +168,9 @@ export function MobileMenu({
   let mark = useRef<SVGSVGElement>(null)
   let rPath = useRef<SVGPathElement>(null)
   let yPath = useRef<SVGPathElement>(null)
+  let topPath = useRef<SVGPathElement>(null)
+  let bottomPath = useRef<SVGPathElement>(null)
+  let intro = useRef<gsap.core.Timeline | null>(null)
   let overlay = useRef<HTMLDivElement>(null)
   let backdrop = useRef<HTMLDivElement>(null)
   let who = useRef<HTMLDivElement>(null)
@@ -120,13 +214,8 @@ export function MobileMenu({
     return cardRefs.current.filter(Boolean) as Array<HTMLAnchorElement>
   }
 
-  // The Y back to fully drawn, whatever the idle was doing.
-  function restoreY() {
-    if (yPath.current) {
-      gsap.set(yPath.current, {
-        clearProps: 'strokeDasharray,strokeDashoffset',
-      })
-    }
+  function strokes(): Strokes {
+    return [rPath.current, yPath.current, topPath.current, bottomPath.current]
   }
 
   // Where the folded cards sit: on the mark itself.
@@ -153,7 +242,8 @@ export function MobileMenu({
     if (open) return
     register()
     placePile()
-    restoreY()
+    // Opening mid-intro jumps it to the menu icon first.
+    intro.current?.progress(1)
     if (animate) {
       settle()
       flipState.current = Flip.getState(cardElements())
@@ -185,27 +275,88 @@ export function MobileMenu({
 
   // The mark follows `open`, and nothing else touches the morph.
   useEffect(() => {
-    let r = rPath.current
-    let y = yPath.current
-    if (!r || !y) return
+    let top = topPath.current
+    let bottom = bottomPath.current
+    if (!top || !bottom) return
     register()
-    restoreY()
     if (!morph.current) {
       morph.current = gsap
         .timeline({
           paused: true,
-          defaults: { duration: 0.45, ease: 'power3.inOut' },
+          defaults: { duration: 0.5, ease: 'power3.inOut' },
         })
-        .to(r, { morphSVG: CLOSE_R, attr: { 'stroke-width': 46 } }, 0)
-        .to(y, { morphSVG: CLOSE_Y, attr: { 'stroke-width': 46 } }, 0)
+        .to(top, { morphSVG: CLOSE_TOP }, 0)
+        .to(bottom, { morphSVG: CLOSE_BOTTOM }, 0)
     }
+    let target = open ? 1 : 0
+    let timeline = morph.current
+    if (timeline.progress() === target && !timeline.isActive()) return
     if (animate) {
-      if (open) morph.current.timeScale(1).play()
-      else morph.current.timeScale(1.2).reverse()
+      if (open) timeline.timeScale(1).play()
+      else timeline.timeScale(1.2).reverse()
+    } else if (display.motion === 'reduced') {
+      // A tap still gets a quick fade; nothing travels.
+      gsap
+        .timeline()
+        .to(mark.current, { opacity: 0, duration: 0.075, ease: 'none' })
+        .call(() => void timeline.progress(target))
+        .to(mark.current, { opacity: 1, duration: 0.075, ease: 'none' })
     } else {
-      morph.current.progress(open ? 1 : 0)
+      timeline.progress(target)
     }
-  }, [open, animate])
+  }, [open, animate, display.motion])
+
+  // The intro, once per page load (the header stays mounted across client
+  // navigations). It reads the motion level directly, since `useDisplay`
+  // reports `off` until it has mounted.
+  useEffect(() => {
+    register()
+    if (motionLevel() !== 'full') {
+      showMenu(strokes())
+      setSettled(true)
+      return
+    }
+    let timeline = gsap.timeline({
+      delay: HOLD,
+      onComplete: () => {
+        intro.current = null
+        setSettled(true)
+      },
+    })
+    writeOff(timeline, strokes(), 0)
+    intro.current = timeline
+    return () => {
+      timeline.kill()
+      intro.current = null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Motion turned down mid-intro: finish it where it was heading. Reads the
+  // level directly, because `animate` is false on the first render too.
+  useEffect(() => {
+    if (motionLevel() !== 'full') intro.current?.progress(1)
+  }, [animate])
+
+  // Idle return: after 12 s untouched, the menu icon writes back into the
+  // signature, holds for 1.5 s, and writes off again. Only at full motion,
+  // while the menu is fully closed and the mark is not being pointed at.
+  useEffect(() => {
+    if (!animate || !settled || open || shown || held) return
+    let marks = strokes()
+    let idle = gsap.timeline({
+      repeat: -1,
+      repeatDelay: IDLE_WAIT,
+      delay: IDLE_WAIT,
+    })
+    writeBack(idle, marks, 0)
+    writeOff(idle, marks, 2.6)
+    return () => {
+      idle.kill()
+      showMenu(marks)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [animate, settled, open, shown, held])
 
   // The cards' flight, once React has rendered the new layout.
   useLayoutEffect(() => {
@@ -344,25 +495,6 @@ export function MobileMenu({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Idle: the Y re-signs itself every 3 s, only while the menu is fully
-  // closed and the mark is not being pointed at.
-  useEffect(() => {
-    let y = yPath.current
-    if (!y || !animate || open || shown || held) return
-    register()
-    let length = y.getTotalLength()
-    gsap.set(y, { strokeDasharray: length, strokeDashoffset: 0 })
-    let idle = gsap
-      .timeline({ repeat: -1, repeatDelay: 2.1, delay: 1 })
-      .set(y, { strokeDashoffset: length })
-      .to(y, { strokeDashoffset: 0, duration: 0.9, ease: 'power2.inOut' })
-    return () => {
-      idle.kill()
-      restoreY()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [animate, open, shown, held])
-
   return (
     <div className={className}>
       <button
@@ -385,11 +517,38 @@ export function MobileMenu({
           stroke="currentColor"
           strokeLinecap="round"
           strokeLinejoin="round"
+          strokeDasharray="1 2"
           aria-hidden="true"
           className="h-8 w-8 overflow-visible"
         >
-          <path ref={rPath} d={R_PATH} strokeWidth={54} />
-          <path ref={yPath} d={Y_PATH} strokeWidth={30} />
+          <path
+            ref={rPath}
+            d={R_PATH}
+            pathLength={1}
+            strokeWidth={54}
+            strokeDashoffset={DRAWN}
+          />
+          <path
+            ref={yPath}
+            d={Y_PATH}
+            pathLength={1}
+            strokeWidth={30}
+            strokeDashoffset={DRAWN}
+          />
+          <path
+            ref={topPath}
+            d={MENU_TOP}
+            pathLength={1}
+            strokeWidth={46}
+            strokeDashoffset={UNDRAWN}
+          />
+          <path
+            ref={bottomPath}
+            d={MENU_BOTTOM}
+            pathLength={1}
+            strokeWidth={46}
+            strokeDashoffset={UNDRAWN}
+          />
         </svg>
       </button>
 

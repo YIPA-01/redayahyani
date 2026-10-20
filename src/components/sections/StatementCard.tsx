@@ -26,7 +26,7 @@ export function StatementCard({
       )}
     >
       <BlueprintGrid />
-      <p className="mx-auto max-w-[26ch] text-balance text-start font-serif text-[clamp(1.75rem,4.6vw,3.5rem)] italic leading-[1.15] tracking-[-0.01em] text-ink dark:text-white">
+      <p className="mx-auto max-w-[26ch] text-balance text-center font-serif sm:text-start text-[clamp(1.75rem,4.6vw,3.5rem)] italic leading-[1.15] tracking-[-0.01em] text-ink dark:text-white">
         <MorphText text={text} />
       </p>
       <MorphPauseButton />
