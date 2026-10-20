@@ -68,7 +68,7 @@ function ThemeToggle() {
     <button
       type="button"
       aria-label={mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'}
-      className="group rounded-full p-2 transition hover:bg-panel"
+      className="group rounded-full p-2 pe-0 transition hover:bg-panel md:pe-2"
       onClick={() => setTheme(otherTheme)}
     >
       <SunIcon className="h-6 w-6 fill-transparent stroke-muted transition group-hover:stroke-ink dark:hidden" />
@@ -114,7 +114,7 @@ export function Header({ menuCounts }: { menuCounts: MenuCounts }) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line/60 bg-canvas/85 backdrop-blur [[data-menu-open]_&]:border-transparent [[data-menu-open]_&]:bg-white [[data-menu-open]_&]:backdrop-blur-none dark:[[data-menu-open]_&]:bg-black">
+    <header className="sticky top-0 z-50  bg-canvas/85 backdrop-blur [[data-menu-open]_&]:border-transparent [[data-menu-open]_&]:bg-white [[data-menu-open]_&]:backdrop-blur-none dark:[[data-menu-open]_&]:bg-black">
       <Container>
         <div className="flex h-16 items-center gap-4">
           {/* On phones the signature is the menu; from md it links home. */}

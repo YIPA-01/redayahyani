@@ -19,7 +19,8 @@ import { useDisplay } from '@/lib/a11y/useDisplay'
 // mark is recognisable as a menu. After 12 s untouched it writes back into the
 // signature, holds, and writes off again. On tap the two lines morph into a
 // close mark. The sections arrive as stacked cards that fly out of the mark
-// with Flip and fold back into it, on a solid white (or black) page.
+// with Flip, on a solid white (or black) page, and the whole menu fades away
+// in place on close.
 //
 // Motion: at full, all of the above. Reduced stops anything that moves on its
 // own, so there is no intro or idle return: the mark is the menu icon at once,
@@ -176,7 +177,7 @@ export function MobileMenu({
   let who = useRef<HTMLDivElement>(null)
   let cardRefs = useRef<Array<HTMLAnchorElement | null>>([])
   let flipState = useRef<Flip.FlipState | null>(null)
-  let flight = useRef<gsap.core.Timeline | null>(null)
+  let flight = useRef<gsap.core.Animation | null>(null)
   let morph = useRef<gsap.core.Timeline | null>(null)
 
   let cards = [
@@ -235,6 +236,7 @@ export function MobileMenu({
     let elements = cardElements()
     gsap.killTweensOf(elements)
     gsap.set(elements, { clearProps: CARD_PROPS })
+    if (overlay.current) gsap.set(overlay.current, { clearProps: 'opacity' })
   }
 
   // Handlers only change state. The effects below do the drawing.
@@ -256,7 +258,6 @@ export function MobileMenu({
     if (!open) return
     if (animate) {
       settle()
-      flipState.current = Flip.getState(cardElements())
       setOpen(false)
     } else {
       setOpen(false)
@@ -358,15 +359,17 @@ export function MobileMenu({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animate, settled, open, shown, held])
 
-  // The cards' flight, once React has rendered the new layout.
+  // Opening: the cards' flight, once React has rendered the new layout.
+  // Closing: the cards stay put (they keep their layout while `shown`) and
+  // the whole menu fades out.
   useLayoutEffect(() => {
     let state = flipState.current
     flipState.current = null
-    if (!state) return
     let elements = cardElements()
     let inners = elements.map((element) => element.firstElementChild)
 
     if (open) {
+      if (!state) return
       gsap.fromTo(
         backdrop.current,
         { opacity: 0 },
@@ -393,26 +396,19 @@ export function MobileMenu({
           gsap.set(elements, { clearProps: CARD_PROPS })
         },
       })
-    } else {
-      gsap.to([backdrop.current, who.current], {
+    } else if (shown && animate && overlay.current) {
+      flight.current = gsap.to(overlay.current, {
         opacity: 0,
-        duration: 0.35,
-        delay: 0.1,
-        ease: 'power1.in',
-      })
-      flight.current = Flip.from(state, {
-        duration: 0.55,
-        ease: 'power3.in',
-        stagger: { each: 0.04, from: 'end' },
-        absolute: true,
-        zIndex: 3,
+        duration: 0.2,
+        ease: 'power1.out',
         onComplete: () => {
           flight.current = null
-          gsap.set(elements, { clearProps: CARD_PROPS })
           setShown(false)
         },
       })
     }
+    // Only a change of `open` starts a flight or a fade.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   // A closed menu is out of the tab order and the accessibility tree
@@ -420,7 +416,7 @@ export function MobileMenu({
   // Runs again once the portal has mounted, since the refs are empty before.
   useEffect(() => {
     overlay.current?.toggleAttribute('inert', !shown)
-    let parts = [backdrop.current, who.current].filter(Boolean)
+    let parts = [overlay.current, backdrop.current, who.current].filter(Boolean)
     if (!shown && parts.length > 0) {
       gsap.set(parts, { clearProps: 'opacity,transform' })
     }
@@ -607,7 +603,7 @@ export function MobileMenu({
                     className={clsx(
                       'block overflow-hidden',
                       card.tone,
-                      open
+                      shown
                         ? clsx(
                             'relative h-28 rounded-[18px]',
                             index > 0 && '-mt-4',
@@ -618,7 +614,7 @@ export function MobileMenu({
                     <span
                       className={clsx(
                         'absolute inset-0 block px-4 py-3.5',
-                        !open && 'opacity-0',
+                        !shown && 'opacity-0',
                       )}
                     >
                       <span className="block text-[17px] font-semibold leading-tight">
