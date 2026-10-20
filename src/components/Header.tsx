@@ -68,7 +68,7 @@ function ThemeToggle() {
     <button
       type="button"
       aria-label={mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'}
-      className="group rounded-full p-2 pe-0 transition hover:bg-panel md:pe-2"
+      className="group rounded-full p-2 transition hover:bg-panel"
       onClick={() => setTheme(otherTheme)}
     >
       <SunIcon className="h-6 w-6 fill-transparent stroke-muted transition group-hover:stroke-ink dark:hidden" />
