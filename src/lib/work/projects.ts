@@ -40,7 +40,7 @@ export const workProjects: Array<WorkProject> = [
   {
     slug: 'roomee',
     name: 'Roomee',
-    role: 'Personal project',
+    role: 'Product engineer',
     // TODO: confirm the start year; the current version's history starts March 2026.
     year: '2024 to present',
     description:

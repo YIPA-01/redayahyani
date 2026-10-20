@@ -17,7 +17,7 @@
 │   └── /articles/<slug>  Article (MDX)
 ├── /about                About
 ├── /writing              Poetry (footer and About only)
-├── /library              Books I keep coming back to (footer and About only)
+├── /library              Books I keep coming back to (header marquee, footer, About)
 ├── /accessibility        What the site supports, Display preferences, how to report a barrier
 └── /portal               Client portal (separate shell, unchanged)
 
@@ -58,11 +58,11 @@ Solid lines are header navigation and index links. Dotted lines are in-page link
 
 ## Navigation
 
-**Header** (freelance first): Work, Services, Articles, About, scrolling in a compact marquee in the middle of the header, with the current page in coral (Lab joins after Articles once it exists). Phones get the same list in the Menu popover instead. A **Start a project** button sits at the end and goes to `/services#contact`.
+**Header** (freelance first): Work, Services, Articles, About, Library, scrolling in a compact marquee in the middle of the header, with the current page in coral (Lab joins after Articles once it exists). Phones get the Menu popover instead, which leaves Library out. A **Start a project** button sits at the end and goes to `/services#contact`.
 
 **Footer:** Work, Services, Articles, About, Writing, Library, Accessibility (Lab joins once it exists), Client portal sign-in (`/portal/sign-in`), the email address, and socials (GitHub, LinkedIn, X). Above those links sits the CV (Education, Experience, Skills, Certifications): four open columns from `lg`, four closed disclosures below it so the CV doesn't add two screens to every page on a phone.
 
-`/writing` and `/library` stay out of the header on purpose.
+`/writing` stays out of the header on purpose.
 
 ## Pages
 
@@ -138,7 +138,7 @@ Notes on the craft. Structure and data stay as they are.
 Poetry. Reachable from the footer and About only.
 
 ### Library `/library` (new)
-Book covers with title and author, from the `books` array in `src/app/(site)/library/page.tsx`. Covers live in `public/library/`. Reachable from the footer and About only.
+Book covers with title and author, from the `books` array in `src/app/(site)/library/page.tsx`. Covers live in `public/library/`. Reachable from the header marquee, the footer, and About.
 
 ### Portal `/portal` (existing, unchanged)
 A separate dashboard shell with its own route map in `src/components/portal/shell/nav.ts`. It appears on the public site only as the footer sign-in link and as the sample on `/services`.

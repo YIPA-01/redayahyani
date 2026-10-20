@@ -55,7 +55,7 @@ Extends the writing rules in `CLAUDE.md` (no em or en dashes, first person, no h
 
 | Project | Role | Card copy |
 |---|---|---|
-| Roomee | Personal project · 2024 to present | Students and young professionals in Morocco find a room, or a flatmate, they can trust. I designed and built it end to end: search, matching, requests, and realtime chat. |
+| Roomee | Product engineer · 2024 to present | Students and young professionals in Morocco find a room, or a flatmate, they can trust. I designed and built it end to end: search, matching, requests, and realtime chat. |
 | Path90 | Freelance, with Exploda · 2026 | People coming home from prison follow a 90-day plan, and their case managers see who is falling behind. I built the app and the dashboard from the client's design. |
 | AutoAiConnect | Freelance, with Exploda | A mobile client for conversing with AI agents. Currently unreleased. |
 | GenZ | Solo project | Students map their subjects and interests onto real academic and career paths. |

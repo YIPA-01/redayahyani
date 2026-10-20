@@ -20,6 +20,7 @@ const navigation = [
   { href: '/services', label: 'Services' },
   { href: '/articles', label: 'Articles' },
   { href: '/about', label: 'About' },
+  { href: '/library', label: 'Library' },
 ]
 
 function SunIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
@@ -132,7 +133,7 @@ export function Header({ menuCounts }: { menuCounts: MenuCounts }) {
           </Link>
           {/* The navigation itself scrolls, on screens wide enough for it;
               phones keep the Menu button. */}
-          <div className="mx-auto hidden w-full max-w-md items-center gap-1.5 md:flex">
+          <div className="mx-auto hidden w-full max-w-xl items-center gap-1.5 md:flex">
             <Marquee
               items={navigation}
               label="Primary"

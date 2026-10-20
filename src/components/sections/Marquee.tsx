@@ -87,7 +87,7 @@ export function Marquee({
       data-paused={paused || undefined}
       className={clsx(
         'group overflow-hidden border-ink [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]',
-        compact ? 'rounded-full border' : 'rounded-xl border-[1.5px]',
+        compact ? 'rounded-full border border-e trsnsparent' : 'rounded-xl border-[1.5px]',
         className,
       )}
     >

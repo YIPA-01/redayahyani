@@ -28,7 +28,7 @@ export const experience: Array<CvEntry> = [
   },
   {
     title: 'Roomee',
-    lines: ['Personal project', '2024 to present'],
+    lines: ['Product engineer', '2024 to present'],
   },
 ]
 
