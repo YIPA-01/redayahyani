@@ -15,8 +15,12 @@ export const education: Array<CvEntry> = [
 
 export const experience: Array<CvEntry> = [
   {
+    title: 'Roomee',
+    lines: ['Product engineer', '2026 to present'],
+  },
+  {
     title: 'Exploda',
-    lines: ['Software Engineer (Freelance)', '2026 to present', 'Remote'],
+    lines: ['Software Engineer (Freelance)', 'May 2026 to present', 'Remote'],
   },
   {
     title: 'Self-employed',
@@ -24,11 +28,7 @@ export const experience: Array<CvEntry> = [
   },
   {
     title: 'Foundever, Abbott project',
-    lines: ['Customer Service Advisor', '3 months'],
-  },
-  {
-    title: 'Roomee',
-    lines: ['Product engineer', '2024 to present'],
+    lines: ['Customer Service Advisor', 'Dec 2025 to May 2026'],
   },
 ]
 
@@ -45,10 +45,10 @@ export const skills: Array<Array<string>> = [
     'TypeScript',
     'React, Next.js, Vue.js',
     'Laravel',
-    'SQL, MongoDB, Firebase',
+    'Node.js, PostgreSQL, MySQL',
+    'Firebase, MongoDB, Redis',
     'Python (Pandas, NumPy)',
-    'Docker, Kubernetes',
-    'Git',
+    'Git, Docker, GitHub Actions',
   ],
   ['English', 'French', 'Arabic'],
 ]
